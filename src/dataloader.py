@@ -46,7 +46,7 @@ class DECaLSDataset(Dataset):
         image_path = os.path.join(st.decals, self.desc['png_loc'].iloc[idx])
 
         # get the classes for the pair
-        label = self.desc.iloc[idx, :, 2:].values
+        label = self.desc.iloc[idx, 2:].values
 
         # load the image
         image = Image.open(image_path).convert("RGB")
