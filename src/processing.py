@@ -1,8 +1,8 @@
 # Author: Arrykrishna Mootoovaloo
-# Date: January 2022
+# Date: April 2022
 # Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
-# Description: This file is for processing the data (tags) and making selections.
-# Project: One/Few-Shot Learning for Galaxy Zoo
+# Description: This file is for processing the data to an appropriate format.
+# Project: Multi-Task Learning for Galaxy Zoo
 
 import os
 import shutil
@@ -128,192 +128,192 @@ def correct_location(csv: str, save: bool = False, **kwargs) -> pd.DataFrame:
     return dataframe
 
 
-def filtering(dataframe: pd.DataFrame, dictionary: dict, save: bool = False, **kwargs) -> pd.DataFrame:
-    """Given a dictionary of filters, filter the dataframe. For example,
+# def filtering(dataframe: pd.DataFrame, dictionary: dict, save: bool = False, **kwargs) -> pd.DataFrame:
+#     """Given a dictionary of filters, filter the dataframe. For example,
 
-    dictionary = {'has-spiral-arms_yes_fraction' : 0.75, 'has-spiral-arms_yes' : 20}
+#     dictionary = {'has-spiral-arms_yes_fraction' : 0.75, 'has-spiral-arms_yes' : 20}
 
-    means we have at least 20 volunteers, who have voted for spiral arms, and the
-    fraction of those who voted for spiral arms is at least 0.75.
+#     means we have at least 20 volunteers, who have voted for spiral arms, and the
+#     fraction of those who voted for spiral arms is at least 0.75.
 
-    Note that the keys in the dictionary are the column names in the dataframe.
+#     Note that the keys in the dictionary are the column names in the dataframe.
 
-    Args:
-        df (pd.DataFrame): A pandas dataframe with the metadata
-        dictionary (dict): A dictionary of filters.
-        save (bool): Option to save the outputs. Defaults to False.
+#     Args:
+#         df (pd.DataFrame): A pandas dataframe with the metadata
+#         dictionary (dict): A dictionary of filters.
+#         save (bool): Option to save the outputs. Defaults to False.
 
-    Returns:
-        pd.DataFrame: A pandas dataframe with the filtered data.
-    """
+#     Returns:
+#         pd.DataFrame: A pandas dataframe with the filtered data.
+#     """
 
-    # number of objects in the dataframe
-    nobjects = dataframe.shape[0]
+#     # number of objects in the dataframe
+#     nobjects = dataframe.shape[0]
 
-    # items in the dictionary
-    items = list(dictionary.items())
+#     # items in the dictionary
+#     items = list(dictionary.items())
 
-    condition = [True] * nobjects
+#     condition = [True] * nobjects
 
-    for item in items:
-        condition &= dataframe[item[0]] > item[1]
+#     for item in items:
+#         condition &= dataframe[item[0]] > item[1]
 
-    # apply condition and reset index
-    df_sub = dataframe[condition]
-    df_sub.reset_index(inplace=True, drop=True)
+#     # apply condition and reset index
+#     df_sub = dataframe[condition]
+#     df_sub.reset_index(inplace=True, drop=True)
 
-    if save:
-        filename = kwargs.pop('filename')
-        hp.save_parquet(df_sub, st.data_dir + '/descriptions', filename)
+#     if save:
+#         filename = kwargs.pop('filename')
+#         hp.save_parquet(df_sub, st.data_dir + '/descriptions', filename)
 
-    return df_sub
-
-
-def subset_df(dataframe: pd.DataFrame, nsubjects: int, random: bool = False,
-              save: bool = False, **kwargs) -> pd.DataFrame:
-    """Generate a subset of objects, for example, 2 000 out of 10 000 spirals.
-
-    Args:
-        dataframe (pd.DataFrame): A dataframe consisting of specific objects, for example, spirals.
-        nsubjects (int): The number of subjects we want to pick.
-        random (bool): We can set this to True, if we want to pick the subjects randomly.
-        save (bool): Option to save the outputs. Defaults to False.
-
-    Returns:
-        pd.DataFrame: A pandas dataframe consisting of a subset of images.
-    """
-
-    # total number of objects
-    total = dataframe.shape[0]
-
-    assert nsubjects <= total, 'The number of subjects requested is larger than the available number of objects.'
-
-    if random:
-        idx = np.random.choice(total, nsubjects, replace=False)
-
-    else:
-        idx = range(nsubjects)
-
-    df_sub = dataframe.iloc[idx]
-    df_sub.reset_index(inplace=True, drop=True)
-
-    if save:
-        filename = kwargs.pop('filename')
-        hp.save_parquet(df_sub, st.data_dir + '/descriptions', filename)
-
-    return df_sub
+#     return df_sub
 
 
-def copy_images(dataframe: pd.DataFrame, foldername: str) -> None:
-    """Copy images from Mike's folder to our working directory.
+# def subset_df(dataframe: pd.DataFrame, nsubjects: int, random: bool = False,
+#               save: bool = False, **kwargs) -> pd.DataFrame:
+#     """Generate a subset of objects, for example, 2 000 out of 10 000 spirals.
 
-    Args:
-        df (pd.DataFrame): A dataframe consisting of specific objects, for example, spiral
-        foldername (str): Name of the folder where we want to copy the images
-    """
+#     Args:
+#         dataframe (pd.DataFrame): A dataframe consisting of specific objects, for example, spirals.
+#         nsubjects (int): The number of subjects we want to pick.
+#         random (bool): We can set this to True, if we want to pick the subjects randomly.
+#         save (bool): Option to save the outputs. Defaults to False.
 
-    # number of objects
-    nobjects = dataframe.shape[0]
+#     Returns:
+#         pd.DataFrame: A pandas dataframe consisting of a subset of images.
+#     """
 
-    # create a folder where we want to store the images
-    folder = st.data_dir + '/' + 'images' + '/' + foldername + '/'
+#     # total number of objects
+#     total = dataframe.shape[0]
 
-    # create the different folders if they do not exist (remove them if they exist already)
-    if os.path.exists(folder):
+#     assert nsubjects <= total, 'The number of subjects requested is larger than the available number of objects.'
 
-        # delete the folder first if it exists
-        shutil.rmtree(folder)
+#     if random:
+#         idx = np.random.choice(total, nsubjects, replace=False)
 
-    # then create a new one
-    os.makedirs(folder)
+#     else:
+#         idx = range(nsubjects)
 
-    counts = 0
-    # fetch the data from Mike's directory
-    for i in range(nobjects):
+#     df_sub = dataframe.iloc[idx]
+#     df_sub.reset_index(inplace=True, drop=True)
 
-        decals_file = st.decals + '/' + dataframe['png_loc'].iloc[i]
+#     if save:
+#         filename = kwargs.pop('filename')
+#         hp.save_parquet(df_sub, st.data_dir + '/descriptions', filename)
 
-        if os.path.isfile(decals_file):
-            cmd = f'cp {decals_file} {folder}'
-            os.system(cmd)
-            counts += 1
-
-    print(f'{counts} images saved to {folder}')
+#     return df_sub
 
 
-def move_data(subset: str, object_type: str) -> None:
-    """Move data to the right folder.
+# def copy_images(dataframe: pd.DataFrame, foldername: str) -> None:
+#     """Copy images from Mike's folder to our working directory.
 
-    Args:
-        subset (str) : validate or train or test
-        object_type (str): name of the object, for example, 'spiral', we want to move
-    """
+#     Args:
+#         df (pd.DataFrame): A dataframe consisting of specific objects, for example, spiral
+#         foldername (str): Name of the folder where we want to copy the images
+#     """
 
-    assert subset in ['validate', 'test', 'train'], "Typical group in ML: validate, train, test"
+#     # number of objects
+#     nobjects = dataframe.shape[0]
 
-    # the Machine Learning set (validate, train, test)
-    ml_set = hp.load_csv(st.data_dir + '/ml/' + subset, object_type)
+#     # create a folder where we want to store the images
+#     folder = st.data_dir + '/' + 'images' + '/' + foldername + '/'
 
-    # number of objects we have
-    nobject = ml_set.shape[0]
+#     # create the different folders if they do not exist (remove them if they exist already)
+#     if os.path.exists(folder):
 
-    # folder where we want to store the images
-    folder = st.data_dir + '/' + 'ml' + '/' + subset + '_images' + '/' + object_type + '/'
+#         # delete the folder first if it exists
+#         shutil.rmtree(folder)
 
-    # create the different folders if they do not exist (remove them if they exist already)
-    if os.path.exists(folder):
+#     # then create a new one
+#     os.makedirs(folder)
 
-        # delete the folder first if it exists
-        shutil.rmtree(folder)
+#     counts = 0
+#     # fetch the data from Mike's directory
+#     for i in range(nobjects):
 
-    # then create a new one
-    os.makedirs(folder)
+#         decals_file = st.decals + '/' + dataframe['png_loc'].iloc[i]
 
-    # copy the data from images/item to categories/train/item
-    for j in range(nobject):
+#         if os.path.isfile(decals_file):
+#             cmd = f'cp {decals_file} {folder}'
+#             os.system(cmd)
+#             counts += 1
 
-        file = st.data_dir + '/' + 'images' + '/' + object_type + '/' + ml_set.iauname.iloc[j] + '.png'
-
-        if os.path.isfile(file):
-            cmd = f'cp {file} {folder}'
-            os.system(cmd)
-
-
-def images_train_validate_test(tag_names: list) -> None:
-    """Read the csv file for a particular tag and copy the images in their respective folders
-
-    Args:
-        tag_names (list): A list of the tag names, for example, elliptical, ring, spiral
-    """
-
-    for item in tag_names:
-        for subset in ['validate', 'train', 'test']:
-            move_data(subset, item)
+#     print(f'{counts} images saved to {folder}')
 
 
-def copy_test_images(images: list, target_folder: str):
-    """Copy a single image to the target folder
+# def move_data(subset: str, object_type: str) -> None:
+#     """Move data to the right folder.
 
-    Args:
-        images (list): a list with the names of the object (png_loc, that is, Jxxx/image)
-        target_folder (str): the folder where we want to test the image
-    """
+#     Args:
+#         subset (str) : validate or train or test
+#         object_type (str): name of the object, for example, 'spiral', we want to move
+#     """
 
-    # we also want the details of the galaxy
-    dr5_desc = hp.read_parquet(st.data_dir, 'descriptions/decals_5_votes')
+#     assert subset in ['validate', 'test', 'train'], "Typical group in ML: validate, train, test"
 
-    for image in images:
-        desc = dr5_desc[dr5_desc['png_loc'] == image]
+#     # the Machine Learning set (validate, train, test)
+#     ml_set = hp.load_csv(st.data_dir + '/ml/' + subset, object_type)
 
-        # save the description of the galaxy
-        obj = os.path.split(image)[-1][:-4]
-        hp.save_pickle(desc, 'test-images', obj)
+#     # number of objects we have
+#     nobject = ml_set.shape[0]
 
-        # copy image
-        full_path = os.path.join(st.decals, image)
+#     # folder where we want to store the images
+#     folder = st.data_dir + '/' + 'ml' + '/' + subset + '_images' + '/' + object_type + '/'
 
-        if not os.path.exists:
-            raise FileNotFoundError(f'{full_path} does not exist')
+#     # create the different folders if they do not exist (remove them if they exist already)
+#     if os.path.exists(folder):
 
-        cmd = f'cp {full_path} {target_folder}'
-        os.system(cmd)
+#         # delete the folder first if it exists
+#         shutil.rmtree(folder)
+
+#     # then create a new one
+#     os.makedirs(folder)
+
+#     # copy the data from images/item to categories/train/item
+#     for j in range(nobject):
+
+#         file = st.data_dir + '/' + 'images' + '/' + object_type + '/' + ml_set.iauname.iloc[j] + '.png'
+
+#         if os.path.isfile(file):
+#             cmd = f'cp {file} {folder}'
+#             os.system(cmd)
+
+
+# def images_train_validate_test(tag_names: list) -> None:
+#     """Read the csv file for a particular tag and copy the images in their respective folders
+
+#     Args:
+#         tag_names (list): A list of the tag names, for example, elliptical, ring, spiral
+#     """
+
+#     for item in tag_names:
+#         for subset in ['validate', 'train', 'test']:
+#             move_data(subset, item)
+
+
+# def copy_test_images(images: list, target_folder: str):
+#     """Copy a single image to the target folder
+
+#     Args:
+#         images (list): a list with the names of the object (png_loc, that is, Jxxx/image)
+#         target_folder (str): the folder where we want to test the image
+#     """
+
+#     # we also want the details of the galaxy
+#     dr5_desc = hp.read_parquet(st.data_dir, 'descriptions/decals_5_votes')
+
+#     for image in images:
+#         desc = dr5_desc[dr5_desc['png_loc'] == image]
+
+#         # save the description of the galaxy
+#         obj = os.path.split(image)[-1][:-4]
+#         hp.save_pickle(desc, 'test-images', obj)
+
+#         # copy image
+#         full_path = os.path.join(st.decals, image)
+
+#         if not os.path.exists:
+#             raise FileNotFoundError(f'{full_path} does not exist')
+
+#         cmd = f'cp {full_path} {target_folder}'
+#         os.system(cmd)
