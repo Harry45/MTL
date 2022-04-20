@@ -54,6 +54,8 @@ class DECaLSDataset(Dataset):
         # transform the images
         if self.transform:
             image = self.transform(image).float()
+            print(type(image))
+            print(image.shape)
 
         return image, label
 
