@@ -15,11 +15,11 @@ import utils.helpers as hp
 import settings as st
 
 
-def generate_labels(fname: str, save: bool = False) -> pd.DataFrame:
+def generate_labels(dataframe: pd.DataFrame, save: bool = False) -> pd.DataFrame:
     """Process the vote fraction and turn them into labels.
 
     Args:
-        fname (str): Name of the file which we want to process
+        dataframe (pd.DataFrame): Name of the file which we want to process
         save (bool, optional): Option to save the file. Defaults to False.
 
     Raises:
@@ -28,14 +28,11 @@ def generate_labels(fname: str, save: bool = False) -> pd.DataFrame:
     Returns:
         pd.DataFrame: A pandas dataframe consisting of the labels.
     """
-
-    desc = hp.read_parquet(st.data_dir, 'descriptions/' + fname)
-
     # number of columns in the dataframe
-    ncols = desc.shape[1]
+    ncols = dataframe.shape[1]
 
     # the vote fraction
-    vote_fraction = desc[desc.columns[['fraction' in desc.columns[i] for i in range(ncols)]]]
+    vote_fraction = dataframe[dataframe.columns[['fraction' in dataframe.columns[i] for i in range(ncols)]]]
 
     # generate the labels
     labels = vote_fraction.copy()
@@ -47,10 +44,11 @@ def generate_labels(fname: str, save: bool = False) -> pd.DataFrame:
     labels.fillna(-100, inplace=True)
 
     # keep the image names and locations in the file which contains the labels
-    labels = pd.concat([desc[['iauname', 'png_loc']], labels], axis=1)
+    labels = pd.concat([dataframe[['iauname', 'png_loc']], labels], axis=1)
 
     if save:
-        hp.save_parquet(labels, st.data_dir + '/descriptions', 'labels')
+        path = os.path.join(st.data_dir, 'descriptions')
+        hp.save_parquet(labels, path, 'labels')
 
     return labels
 
