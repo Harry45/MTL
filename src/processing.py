@@ -8,7 +8,7 @@ import os
 import shutil
 import pandas as pd
 import numpy as np
-import sklearn.model_selection as sm
+from sklearn.model_selection import train_test_split
 
 # our own functions and scripts
 import utils.helpers as hp
@@ -55,11 +55,11 @@ def generate_labels(fname: str, save: bool = False) -> pd.DataFrame:
     return labels
 
 
-def split_data(tag_names: list, val_size: float = 0.20, test_size: float = 0.20, save: bool = False) -> dict:
+def split_data(dataframe: pd.DataFrame, val_size: float = 0.20, test_size: float = 0.20, save: bool = False) -> dict:
     """Split the data into training and validation size for assessing the performance of the network.
 
     Args:
-        tag_names (list): A list of the tag names, for example, elliptical, ring, spiral
+        dataframe (pd.DataFrame): DataFrame consisting of the labels
         val_size (float, optional): The size of the validation set, a number between 0 and 1. Defaults to 0.20.
         test_size (float, optional): The size of the testing set, a number between 0 and 1. Defaults to 0.20.
         save (bool): Choose if we want to save the outputs generated. Defaults to False.
@@ -73,34 +73,28 @@ def split_data(tag_names: list, val_size: float = 0.20, test_size: float = 0.20,
 
     assert train_size > 0, "The validation and/or test size is too large."
 
-    record = {}
+    # split the data into train and test
+    dummy, test = train_test_split(dataframe, test_size=test_size)
 
-    for item in tag_names:
+    # the validation size needs to be updated based on the first split
+    val_new = val_size * dataframe.shape[0] / dummy.shape[0]
 
-        # load the csv file
-        tag_file = hp.read_parquet(st.data_dir, 'descriptions/subset_' + item)
+    # then we generate the training and validation set
+    train, validate = train_test_split(dummy, test_size=val_new)
 
-        # split the data into train and test
-        dummy, test = sm.train_test_split(tag_file, test_size=test_size)
+    # reset the index (not required, but just in case)
+    test.reset_index(drop=True, inplace=True)
+    train.reset_index(drop=True, inplace=True)
+    validate.reset_index(drop=True, inplace=True)
 
-        # the validation size needs to be updated based on the first split
-        val_new = val_size * tag_file.shape[0] / dummy.shape[0]
+    # store the dataframes in the dictionary
+    record = {'train': train, 'validate': validate, 'test': test}
 
-        # then we generate the training and validation set
-        train, validate = sm.train_test_split(dummy, test_size=val_new)
-
-        # reset the index (not required, but just in case)
-        test.reset_index(drop=True, inplace=True)
-        train.reset_index(drop=True, inplace=True)
-        validate.reset_index(drop=True, inplace=True)
-
-        # store the dataframes in the dictionary
-        record[item] = {'train': train, 'validate': validate, 'test': test}
-
-        if save:
-            hp.save_pd_csv(record[item]['train'], st.data_dir + '/' + 'ml/train', item)
-            hp.save_pd_csv(record[item]['validate'], st.data_dir + '/' + 'ml/validate', item)
-            hp.save_pd_csv(record[item]['test'], st.data_dir + '/' + 'ml/test', item)
+    if save:
+        path = os.path.join(st.data_dir, 'ml')
+        hp.save_pd_csv(record['train'], path, 'train')
+        hp.save_pd_csv(record['validate'], path, 'validate')
+        hp.save_pd_csv(record['test'], path, 'test')
 
     return record
 
