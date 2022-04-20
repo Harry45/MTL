@@ -47,7 +47,7 @@ class DECaLSDataset(Dataset):
         image_path = os.path.join(st.decals, self.desc['png_loc'].iloc[idx])
 
         # get the classes for the pair
-        label = torch.from_numpy(self.desc.iloc[idx, 2:].values)
+        label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))
 
         # load the image
         image = Image.open(image_path).convert("RGB")
