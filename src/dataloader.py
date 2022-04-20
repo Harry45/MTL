@@ -33,7 +33,7 @@ class DECaLSDataset(Dataset):
         trans = st.transformation
 
         # if we choose to augment, we apply the horizontal flip
-        if self.augment:
+        if augment:
 
             trans.append(transforms.RandomHorizontalFlip(p=0.5))
 
