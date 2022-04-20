@@ -1,7 +1,10 @@
+"""
+Description: This file contains some helper functions.
+"""
+
 # Author: Arrykrishna Mootoovaloo
 # Date: January 2022
 # Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
-# Description: This file contains some helper functions.
 # Project: One/Few-Shot Learning for Galaxy Zoo
 
 
@@ -71,7 +74,9 @@ def store_arrays(array: np.ndarray, folder_name: str, file_name: str) -> None:
         os.makedirs(folder_name)
 
     # use compressed format to store data
-    np.savez_compressed(folder_name + '/' + file_name + '.npz', array)
+    fname = os.path.join(folder_name, file_name + '.npz')
+
+    np.savez_compressed(fname, array)
 
 
 def load_arrays(folder_name: str, file_name: str) -> np.ndarray:
@@ -84,8 +89,9 @@ def load_arrays(folder_name: str, file_name: str) -> np.ndarray:
     Returns:
         np.ndarray: The array.
     """
+    fname = os.path.join(folder_name, file_name + '.npz')
 
-    matrix = np.load(folder_name + '/' + file_name + '.npz')['arr_0']
+    matrix = np.load(fname)['arr_0']
 
     return matrix
 
@@ -191,7 +197,7 @@ def save_dict(dictionary: dict, folder_name: str, file_name: str) -> None:
 
     os.makedirs(folder_name, exist_ok=True)
 
-    path = folder_name + '/' + file_name + '.json'
+    path = os.path.join(folder_name, file_name + '.json')
 
     with open(path, 'w') as file:
         json.dump(dictionary, file)
@@ -208,7 +214,7 @@ def read_dict(folder_name: str, file_name: str) -> dict:
         dict: The dictionary
     """
 
-    path = folder_name + '/' + file_name + '.json'
+    path = os.path.join(folder_name, file_name + '.json')
 
     with open(path, 'r') as file:
         dictionary = json.load(file)
@@ -227,7 +233,7 @@ def save_pickle(obj: object, folder_name: str, file_name: str) -> None:
 
     os.makedirs(folder_name, exist_ok=True)
 
-    path = folder_name + '/' + file_name + '.pkl'
+    path = os.path.join(folder_name, file_name + '.pkl')
 
     with open(path, 'wb') as file:
         pickle.dump(obj, file)
@@ -244,7 +250,7 @@ def load_pickle(folder_name: str, file_name: str) -> object:
         object: The object
     """
 
-    path = folder_name + '/' + file_name + '.pkl'
+    path = os.path.join(folder_name, file_name + '.pkl')
 
     with open(path, 'rb') as file:
         obj = pickle.load(file)
