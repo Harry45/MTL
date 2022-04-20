@@ -5,6 +5,7 @@
 # Project: Multi-Task Learning for Galaxy Zoo
 
 import os
+import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 from PIL import Image
@@ -46,7 +47,7 @@ class DECaLSDataset(Dataset):
         image_path = os.path.join(st.decals, self.desc['png_loc'].iloc[idx])
 
         # get the classes for the pair
-        label = self.desc.iloc[idx, 2:].values
+        label = torch.from_numpy(self.desc.iloc[idx, 2:].values)
 
         # load the image
         image = Image.open(image_path).convert("RGB")
@@ -54,8 +55,6 @@ class DECaLSDataset(Dataset):
         # transform the images
         if self.transform:
             image = self.transform(image).float()
-            print(type(image))
-            print(image.shape)
 
         return image, label
 
