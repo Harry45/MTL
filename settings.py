@@ -27,11 +27,10 @@ data_dir = '/data/phys-zooniverse/phys2286/data'
 # the Deep Learning part
 new_img_size = [3, 224, 224]
 
-transformation = [
-    transforms.Grayscale(num_output_channels=1),
-    transforms.ToTensor(),
-    transforms.Resize(300),
-    transforms.CenterCrop(224)]
+transformation = [transforms.ToTensor(),
+                  transforms.Grayscale(num_output_channels=1),
+                  transforms.Resize(300),
+                  transforms.CenterCrop(224)]
 
 # basic statistics of the images. These are fixed, meaning same transformation should be applied to
 # training, validation and test data.

@@ -45,17 +45,11 @@ class DECaLSDataset(Dataset):
         # get the image paths for the pair
         image_path = os.path.join(st.decals, self.desc['png_loc'].iloc[idx])
 
-        print(image_path)
-
         # get the classes for the pair
         label = self.desc.iloc[idx, 2:].values
 
-        print(label)
-
         # load the image
         image = Image.open(image_path).convert("RGB")
-
-        print('Image opened')
 
         # transform the images
         if self.transform:
