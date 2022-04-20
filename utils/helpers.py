@@ -100,14 +100,13 @@ def load_csv(folder_name: str, file_name: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: the loaded csv file
     """
-    path = folder_name + '/' + file_name + '.csv'
+    path = os.path.join(folder_name, file_name + '.csv')
 
     if not os.path.isfile(path):
         raise FileNotFoundError('File not found: ' + path)
 
-    else:
-        df = pd.read_csv(path)
-        return df
+    dataframe = pd.read_csv(path)
+    return dataframe
 
 
 def save_csv(array: np.ndarray, folder_name: str, file_name: str) -> None:
@@ -122,10 +121,12 @@ def save_csv(array: np.ndarray, folder_name: str, file_name: str) -> None:
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
 
-    np.savetxt(folder_name + '/' + file_name + '.csv', array, delimiter=',')
+    path = os.path.join(folder_name, file_name + '.csv')
+
+    np.savetxt(path, array, delimiter=',')
 
 
-def save_pd_csv(df: pd.DataFrame, folder_name: str, file_name: str) -> None:
+def save_pd_csv(dataframe: pd.DataFrame, folder_name: str, file_name: str) -> None:
     """Save an array to a csv file
 
     Args:
@@ -137,14 +138,16 @@ def save_pd_csv(df: pd.DataFrame, folder_name: str, file_name: str) -> None:
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
 
-    df.to_csv(folder_name + '/' + file_name + '.csv', index=False)
+    path = os.path.join(folder_name, file_name + '.csv')
+
+    dataframe.to_csv(path, index=False)
 
 
-def save_parquet(df: pd.DataFrame, folder_name: str, file_name: str) -> None:
+def save_parquet(dataframe: pd.DataFrame, folder_name: str, file_name: str) -> None:
     """Save a dataframe to a parquet file
 
     Args:
-        df(pd.DataFrame): The dataframe to be saved
+        dataframe(pd.DataFrame): The dataframe to be saved
         folder_name(str): The name of the folder
         file_name(str): The name of the file
     """
@@ -152,7 +155,9 @@ def save_parquet(df: pd.DataFrame, folder_name: str, file_name: str) -> None:
     if not os.path.exists(folder_name):
         os.makedirs(folder_name)
 
-    df.to_parquet(folder_name + '/' + file_name + '.parquet', index=False)
+    path = os.path.join(folder_name, file_name + '.parquet')
+
+    dataframe.to_parquet(path, index=False)
 
 
 def read_parquet(folder_name: str, file_name: str) -> pd.DataFrame:
@@ -165,14 +170,14 @@ def read_parquet(folder_name: str, file_name: str) -> pd.DataFrame:
     Returns:
         pd.DataFrame: the loaded csv file
     """
-    path = folder_name + '/' + file_name + '.parquet'
+    path = os.path.join(folder_name, file_name + '.parquet')
 
     if not os.path.isfile(path):
         raise FileNotFoundError('File not found: ' + path)
 
-    else:
-        df = pd.read_parquet(path)
-        return df
+    dataframe = pd.read_parquet(path)
+
+    return dataframe
 
 
 def save_dict(dictionary: dict, folder_name: str, file_name: str) -> None:

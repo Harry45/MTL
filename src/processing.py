@@ -55,6 +55,56 @@ def generate_labels(fname: str, save: bool = False) -> pd.DataFrame:
     return labels
 
 
+def split_data(tag_names: list, val_size: float = 0.20, test_size: float = 0.20, save: bool = False) -> dict:
+    """Split the data into training and validation size for assessing the performance of the network.
+
+    Args:
+        tag_names (list): A list of the tag names, for example, elliptical, ring, spiral
+        val_size (float, optional): The size of the validation set, a number between 0 and 1. Defaults to 0.20.
+        test_size (float, optional): The size of the testing set, a number between 0 and 1. Defaults to 0.20.
+        save (bool): Choose if we want to save the outputs generated. Defaults to False.
+
+    Returns:
+        dict: A dictionary consisting of the training and validation data.
+    """
+
+    # compute the training size
+    train_size = 1.0 - val_size - test_size
+
+    assert train_size > 0, "The validation and/or test size is too large."
+
+    record = {}
+
+    for item in tag_names:
+
+        # load the csv file
+        tag_file = hp.read_parquet(st.data_dir, 'descriptions/subset_' + item)
+
+        # split the data into train and test
+        dummy, test = sm.train_test_split(tag_file, test_size=test_size)
+
+        # the validation size needs to be updated based on the first split
+        val_new = val_size * tag_file.shape[0] / dummy.shape[0]
+
+        # then we generate the training and validation set
+        train, validate = sm.train_test_split(dummy, test_size=val_new)
+
+        # reset the index (not required, but just in case)
+        test.reset_index(drop=True, inplace=True)
+        train.reset_index(drop=True, inplace=True)
+        validate.reset_index(drop=True, inplace=True)
+
+        # store the dataframes in the dictionary
+        record[item] = {'train': train, 'validate': validate, 'test': test}
+
+        if save:
+            hp.save_pd_csv(record[item]['train'], st.data_dir + '/' + 'ml/train', item)
+            hp.save_pd_csv(record[item]['validate'], st.data_dir + '/' + 'ml/validate', item)
+            hp.save_pd_csv(record[item]['test'], st.data_dir + '/' + 'ml/test', item)
+
+    return record
+
+
 def correct_location(csv: str, save: bool = False, **kwargs) -> pd.DataFrame:
     """Rename the columns containing the image location to the right one.
 
@@ -197,56 +247,6 @@ def copy_images(dataframe: pd.DataFrame, foldername: str) -> None:
             counts += 1
 
     print(f'{counts} images saved to {folder}')
-
-
-def split_data(tag_names: list, val_size: float = 0.20, test_size: float = 0.20, save: bool = False) -> dict:
-    """Split the data into training and validation size for assessing the performance of the network.
-
-    Args:
-        tag_names (list): A list of the tag names, for example, elliptical, ring, spiral
-        val_size (float, optional): The size of the validation set, a number between 0 and 1. Defaults to 0.20.
-        test_size (float, optional): The size of the testing set, a number between 0 and 1. Defaults to 0.20.
-        save (bool): Choose if we want to save the outputs generated. Defaults to False.
-
-    Returns:
-        dict: A dictionary consisting of the training and validation data.
-    """
-
-    # compute the training size
-    train_size = 1.0 - val_size - test_size
-
-    assert train_size > 0, "The validation and/or test size is too large."
-
-    record = {}
-
-    for item in tag_names:
-
-        # load the csv file
-        tag_file = hp.read_parquet(st.data_dir, 'descriptions/subset_' + item)
-
-        # split the data into train and test
-        dummy, test = sm.train_test_split(tag_file, test_size=test_size)
-
-        # the validation size needs to be updated based on the first split
-        val_new = val_size * tag_file.shape[0] / dummy.shape[0]
-
-        # then we generate the training and validation set
-        train, validate = sm.train_test_split(dummy, test_size=val_new)
-
-        # reset the index (not required, but just in case)
-        test.reset_index(drop=True, inplace=True)
-        train.reset_index(drop=True, inplace=True)
-        validate.reset_index(drop=True, inplace=True)
-
-        # store the dataframes in the dictionary
-        record[item] = {'train': train, 'validate': validate, 'test': test}
-
-        if save:
-            hp.save_pd_csv(record[item]['train'], st.data_dir + '/' + 'ml/train', item)
-            hp.save_pd_csv(record[item]['validate'], st.data_dir + '/' + 'ml/validate', item)
-            hp.save_pd_csv(record[item]['test'], st.data_dir + '/' + 'ml/test', item)
-
-    return record
 
 
 def move_data(subset: str, object_type: str) -> None:
