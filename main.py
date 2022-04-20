@@ -45,7 +45,7 @@ def splitting(val_size: float = 0.2, test_size: float = 0.2) -> None:
     _ = sp.split_data(labels, val_size, test_size, save=True)
 
 
-def training(batch_size: int = 8, epochs: int = 10, lr: float = 0.001):
+def training(batch_size: int = 8, epochs: int = 10, learn_rate: float = 0.001):
 
     train_dataset = DECaLSDataset(mode='train', augment=True)
     valid_dataset = DECaLSDataset(mode='validate', augment=False)
