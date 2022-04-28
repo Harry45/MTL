@@ -10,6 +10,3 @@ Description: Customised loss functions for the Galaxy Zoo project.
 import torch
 import torch.nn as nn
 import settings as st
-
-# to assign weights to this loss function
-LOSS_FUNC = nn.MultiLabelSoftMarginLoss(weight=st.CLASS_WEIGHTS, reduction='mean')

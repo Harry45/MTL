@@ -42,6 +42,10 @@ NORMALISE = False
 if NORMALISE:
     TRANS.append(transforms.Normalize(mean=MEAN_IMG, std=STD_IMG))
 
+
+# number of classes we have in the decision tree
+NCLASS = 34
+
 # this is the normalised (inverse) weights
 CLASS_WEIGHTS = [0.00208189, 0.00436793, 0.0660458, 0.00749026, 0.00219077,
                  0.00472274, 0.00325833, 0.02512607, 0.01181951, 0.00263074,
