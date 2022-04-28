@@ -39,7 +39,7 @@ model.to(device)
 weights = torch.tensor(st.CLASS_WEIGHTS).to(device)
 
 # set the optimizer
-optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=1E-3, weight_decay=1E-5)
 criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))

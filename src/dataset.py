@@ -35,7 +35,7 @@ class DECaLSDataset(Dataset):
             self.desc = hp.load_csv(path, 'train')
 
             # to remove later
-            self.desc = self.desc.iloc[0:3000]
+            self.desc = self.desc.iloc[0:5000]
 
         elif mode == 'test':
             self.desc = hp.load_csv(path, 'test')
