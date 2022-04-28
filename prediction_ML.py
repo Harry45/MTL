@@ -57,9 +57,9 @@ for images, targets in test_loader:
     out = process_outputs(outputs)
     record_outputs.append(out)
 
-    print(targets.cpu().detach().numpy().reshape(-1))
-    print(out)
-    print('-'*100)
+    # print(targets.cpu().detach().numpy().reshape(-1))
+    # print(out)
+    # print('-'*100)
 
 record_df = pd.DataFrame(record_outputs, columns=['f'+str(i+1) for i in range(st.NCLASS)])
 
