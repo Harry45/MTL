@@ -42,5 +42,5 @@ for images, targets in test_loader:
     loss = criterion(outputs, targets)
 
     print(targets)
-    print(outputs)
+    print(nn.Softmax(outputs))
     print('-'*100)
