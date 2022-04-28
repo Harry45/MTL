@@ -16,6 +16,7 @@ import pandas as pd
 from src.network import MultiLabelNet
 from src.dataset import DECaLSDataset
 import settings as st
+import utils.helpers as hp
 
 
 def process_outputs(outputs, threshold=0.1):
@@ -58,4 +59,4 @@ for images, targets in test_loader:
 
 record_df = pd.DataFrame(record_outputs, columns=['f'+str(i+1) for i in range(st.NCLASS)])
 
-print(record_df.head())
+hp.save_pd_csv(record_df, 'results', 'predictions')
