@@ -16,6 +16,15 @@ from src.network import MultiLabelNet
 from src.dataset import DECaLSDataset
 import settings as st
 
+
+def process_outputs(outputs, threshold=0.1):
+    out = nn.functional.softmax(outputs, dim=1)
+    out[out >= threshold] = 1
+    out[out < threshold] = 0
+    out = out.type(torch.int)
+    return out
+
+
 # we will normally evaluate on CPU (to maend if we want to predict on GPU)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -42,5 +51,5 @@ for images, targets in test_loader:
     loss = criterion(outputs, targets)
 
     print(targets)
-    print(nn.Softmax(outputs))
+    print(process_outputs(outputs))
     print('-'*100)
