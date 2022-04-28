@@ -47,7 +47,7 @@ writer = SummaryWriter(os.path.join(out_path, "summary"))
 epochs = 10
 
 for epoch in range(epochs):
-    print("[{} / {}]".format(epoch + 1, epochs))
+    print("Epoch [{} / {}]".format(epoch + 1, epochs))
     model.train()
 
     losses = []
@@ -88,7 +88,7 @@ for epoch in range(epochs):
     writer.add_scalar('val_loss', val_loss, epoch)
 
     print(f"Validation : Loss={val_loss:.2e}")
-    print("-"*25)
+    print("-"*30)
 
 # model_path = '../fs-models/'
 # os.makedirs(model_path, exist_ok=True)
