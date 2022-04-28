@@ -44,7 +44,7 @@ def generate_labels(dataframe: pd.DataFrame, save: bool = False) -> pd.DataFrame
     # can specify ignore_index = -100)
     labels.fillna(-100, inplace=True)
 
-    # convert to integer
+    # convert to all the labels to integers
     labels = labels.astype(int)
 
     # keep the image names and locations in the file which contains the labels
