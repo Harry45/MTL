@@ -54,7 +54,7 @@ for epoch in range(epochs):
 
     # Training Loop Start
     for images, targets in train_loader:
-        images, targets = map(lambda x: x.to(device), [imgages, targets])
+        images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
         loss = criterion(outputs, targets)
@@ -77,7 +77,7 @@ for epoch in range(epochs):
     losses = []
 
     for images, targets in val_loader:
-        imgages, targets = map(lambda x: x.to(device), [images, targets])
+        images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
         loss = criterion(outputs, targets)
