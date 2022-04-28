@@ -47,7 +47,7 @@ criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
-epochs = 30
+epochs = 10
 
 for epoch in range(epochs):
     print("Epoch [{} / {}]".format(epoch + 1, epochs))
@@ -93,6 +93,6 @@ for epoch in range(epochs):
     print(f"Validation : Loss={val_loss:.2e}")
     print("-"*30)
 
-model_path = '../ml-models/'
-os.makedirs(model_path, exist_ok=True)
-torch.save(model.state_dict(), model_path + 'resnet_18_multilabel.pth')
+# model_path = '../ml-models/'
+# os.makedirs(model_path, exist_ok=True)
+# torch.save(model.state_dict(), model_path + 'resnet_18_multilabel.pth')
