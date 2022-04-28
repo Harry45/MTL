@@ -42,7 +42,7 @@ class MultiLabelNet(nn.Module):
 
         # add a few extra layers
         self.head = nn.Sequential(
-            nn.Dropout(0.2),
+            nn.Dropout(0.5),
             nn.Linear(num_embedding, st.NCLASS)
         )
 

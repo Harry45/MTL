@@ -87,7 +87,7 @@ for epoch in range(epochs):
 
         losses.append(loss.item())
 
-    val_loss = sum(losses) / max(1, len(losses))
+    val_loss = sum(losses) / len(losses)
     writer.add_scalar('val_loss', val_loss, epoch)
 
     print(f"Validation : Loss={val_loss:.2e}")
