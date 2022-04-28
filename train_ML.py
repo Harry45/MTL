@@ -44,7 +44,7 @@ criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
-epochs = 2
+epochs = 10
 
 for epoch in range(epochs):
     print("[{} / {}]".format(epoch + 1, epochs))

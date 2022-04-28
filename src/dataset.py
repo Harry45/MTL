@@ -35,19 +35,19 @@ class DECaLSDataset(Dataset):
             self.desc = hp.load_csv(path, 'train')
 
             # to remove later
-            self.desc = self.desc.iloc[0:100]
+            self.desc = self.desc.iloc[0:1000]
 
         elif mode == 'test':
             self.desc = hp.load_csv(path, 'test')
 
             # to remove later
-            self.desc = self.desc.iloc[0:20]
+            self.desc = self.desc.iloc[0:200]
 
         else:
             self.desc = hp.load_csv(path, 'validate')
 
             # to remove later
-            self.desc = self.desc.iloc[0:20]
+            self.desc = self.desc.iloc[0:200]
 
         # transformations
         trans = st.TRANS
