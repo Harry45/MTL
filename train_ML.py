@@ -28,7 +28,7 @@ train_dataset = DECaLSDataset(mode='train', augment=False)
 val_dataset = DECaLSDataset(mode='validate', augment=False)
 
 train_loader = DataLoader(dataset=train_dataset, batch_size=4, shuffle=True)
-val_loader = DataLoader(dataset=val_loader, batch_size=4, shuffle=False)
+val_loader = DataLoader(dataset=val_dataset, batch_size=4, shuffle=False)
 
 # define the model
 model = MultiLabelNet(backbone="resnet18")
@@ -52,7 +52,7 @@ for epoch in range(epochs):
     losses = []
 
     # Training Loop Start
-    for images, targets in train_dataloader:
+    for images, targets in train_loader:
         images, targets = map(lambda x: x.to(device), [imgages, targets])
 
         outputs = model(images)
@@ -75,7 +75,7 @@ for epoch in range(epochs):
 
     losses = []
 
-    for images, targets in val_dataloader:
+    for images, targets in val_loader:
         imgages, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
