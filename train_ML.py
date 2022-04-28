@@ -11,7 +11,7 @@ import os
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
-from torch.utils.tensorboard import
+from torch.utils.tensorboard import SummaryWriter
 
 # our scripts and functions
 from src.network import MultiLabelNet
