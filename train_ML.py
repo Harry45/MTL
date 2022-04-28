@@ -28,8 +28,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 train_dataset = DECaLSDataset(mode='train', augment=False)
 val_dataset = DECaLSDataset(mode='validate', augment=False)
 
-train_loader = DataLoader(dataset=train_dataset, batch_size=4, shuffle=True)
-val_loader = DataLoader(dataset=val_dataset, batch_size=4, shuffle=False)
+train_loader = DataLoader(dataset=train_dataset, batch_size=8, shuffle=True)
+val_loader = DataLoader(dataset=val_dataset, batch_size=8, shuffle=False)
 
 # define the model
 model = MultiLabelNet(backbone="resnet18")
@@ -39,7 +39,7 @@ model.to(device)
 weights = torch.tensor(st.CLASS_WEIGHTS).to(device)
 
 # set the optimizer
-optimizer = torch.optim.Adam(model.parameters(), lr=1E-3, weight_decay=1E-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
 criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
@@ -90,6 +90,6 @@ for epoch in range(epochs):
     print(f"Validation : Loss={val_loss:.2e}")
     print("-"*30)
 
-# model_path = '../fs-models/'
-# os.makedirs(model_path, exist_ok=True)
-# torch.save(model.state_dict(), model_path + 'resnet_18_multilabel.pth')
+model_path = '../ml-models/'
+os.makedirs(model_path, exist_ok=True)
+torch.save(model.state_dict(), model_path + 'resnet_18_multilabel.pth')
