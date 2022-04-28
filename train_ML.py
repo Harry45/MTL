@@ -16,6 +16,7 @@ from torch.utils.tensorboard import SummaryWriter
 # our scripts and functions
 from src.network import MultiLabelNet
 from src.dataset import DECaLSDataset
+import settings as st
 
 out_path = './output/'
 os.makedirs(out_path, exist_ok=True)
