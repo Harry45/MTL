@@ -10,6 +10,7 @@ Description: Prediction for the multi-label case.
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
+import pandas as pd
 
 # our scripts and functions
 from src.network import MultiLabelNet
@@ -45,13 +46,16 @@ criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 
 # criterion = nn.BCEWithLogitsLoss()
 
+record_outputs = list()
 
 for images, targets in test_loader:
     images, targets = map(lambda x: x.to(device), [images, targets])
 
     outputs = model(images)
     loss = criterion(outputs, targets)
+    out = process_outputs(outputs)
+    record_outputs.append(out)
 
-    print(targets)
-    print(process_outputs(outputs))
-    print('-'*100)
+record_df = pd.DataFrame(record_outputs, columns=['f'+str(i+1) for i in range(st.NCLASS)])
+
+print(record_df.head())
