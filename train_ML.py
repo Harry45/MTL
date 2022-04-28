@@ -35,12 +35,15 @@ val_loader = DataLoader(dataset=val_dataset, batch_size=8, shuffle=False)
 model = MultiLabelNet(backbone="resnet18")
 model.to(device)
 
+# set the optimizer
+optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
+
 # to assign weights to this loss function
 weights = torch.tensor(st.CLASS_WEIGHTS).to(device)
 
-# set the optimizer
-optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
+# loss function
 criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
+# criterion = nn.BCEWithLogitsLoss()
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 

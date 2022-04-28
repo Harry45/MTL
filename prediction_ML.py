@@ -8,6 +8,7 @@ Description: Prediction for the multi-label case.
 # Project: Multi-Task Learning for Galaxy Zoo
 
 import torch
+import torch.nn as nn
 from torch.utils.data import DataLoader
 
 # our scripts and functions
@@ -31,6 +32,8 @@ test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False)
 # to assign weights to this loss function
 weights = torch.tensor(st.CLASS_WEIGHTS).to(device)
 criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
+
+# criterion = nn.BCEWithLogitsLoss()
 
 for images, targets in test_loader:
     images, targets = map(lambda x: x.to(device), [images, targets])
