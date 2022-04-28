@@ -68,7 +68,7 @@ for epoch in range(epochs):
     train_loss = sum(losses) / len(losses)
     writer.add_scalar('train_loss', train_loss, epoch)
 
-    print(f"Training: Loss={train_loss:.2f}")
+    print(f"Training: Loss={train_loss:.2e}")
     # Training Loop End
 
     # Evaluation Loop Start
@@ -87,7 +87,7 @@ for epoch in range(epochs):
     val_loss = sum(losses) / max(1, len(losses))
     writer.add_scalar('val_loss', val_loss, epoch)
 
-    print(f"Validation: Loss={val_loss:.2f}")
+    print(f"Validation: Loss={val_loss:.2e}")
     print("-"*25)
 
 # model_path = '../fs-models/'
