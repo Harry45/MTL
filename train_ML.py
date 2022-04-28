@@ -19,7 +19,11 @@ from src.dataset import DECaLSDataset
 import settings as st
 
 out_path = './output/'
+model_path = '../ml-models/'
+
+# make the folders
 os.makedirs(out_path, exist_ok=True)
+os.makedirs(model_path, exist_ok=True)
 
 # Set device to CUDA if a CUDA device is available, else CPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -93,6 +97,4 @@ for epoch in range(epochs):
     print(f"Validation : Loss={val_loss:.2e}")
     print("-"*30)
 
-model_path = '../ml-models/'
-os.makedirs(model_path, exist_ok=True)
-torch.save(model.state_dict(), model_path + 'resnet_18_multilabel.pth')
+    torch.save(model.state_dict(), model_path + 'resnet_18_multilabel_' + str(epoch) + '.pth')
