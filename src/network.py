@@ -26,7 +26,7 @@ class MultiLabelNet(nn.Module):
     """
 
     def __init__(self, backbone="resnet18"):
-        super(Encoder, self).__init__()
+        super(MultiLabelNet, self).__init__()
 
         if backbone not in models.__dict__:
             raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
