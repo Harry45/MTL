@@ -3,8 +3,8 @@
 #SBATCH --mail-user=arrykrish@gmail.com
 #SBATCH --time=23:30:00
 #SBATCH --job-name=multi-label-network
-#SBATCH --ntasks-per-node=8
-#SBATCH --mem-per-cpu=128G
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem-per-cpu=32G
 #SBATCH --partition=long
 #SBATCH --cluster=htc
 #SBATCH --gres=gpu:1
