@@ -32,7 +32,7 @@ class MultiLabelNet(nn.Module):
             raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
 
         # Create a backbone network from the pretrained models provided in torchvision.models
-        self.backbone = models.__dict__[backbone](pretrained=False, progress=True)
+        self.backbone = models.__dict__[backbone](pretrained=True, progress=True)
 
         # change the first layer because we are using grayscale images
         self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
