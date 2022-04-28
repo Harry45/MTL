@@ -22,6 +22,7 @@ def process_outputs(outputs, threshold=0.1):
     out[out >= threshold] = 1
     out[out < threshold] = 0
     out = out.type(torch.int)
+    out = out.cpu().detach().numpy().reshape(-1)
     return out
 
 
@@ -43,6 +44,7 @@ weights = torch.tensor(st.CLASS_WEIGHTS).to(device)
 criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 
 # criterion = nn.BCEWithLogitsLoss()
+
 
 for images, targets in test_loader:
     images, targets = map(lambda x: x.to(device), [images, targets])
