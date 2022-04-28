@@ -5,7 +5,7 @@
 #SBATCH --job-name=multi-label-network
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=32G
-#SBATCH --partition=long
+#SBATCH --partition=devel
 #SBATCH --cluster=htc
 #SBATCH --gres=gpu:1
 #SBATCH --output=jobs/%j.out
