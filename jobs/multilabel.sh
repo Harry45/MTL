@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=arrykrish@gmail.com
-#SBATCH --time=48:00:00
+#SBATCH --time=00:10:00
 #SBATCH --job-name=multi-label-network
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=32G
-#SBATCH --partition=long
+#SBATCH --partition=short
 #SBATCH --cluster=htc
 #SBATCH --gres=gpu:1
 #SBATCH --output=jobs/%j.out
