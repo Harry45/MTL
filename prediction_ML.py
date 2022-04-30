@@ -19,10 +19,10 @@ import settings as st
 import utils.helpers as hp
 
 
-def process_outputs(outputs, threshold=0.1):
-    out = nn.functional.softmax(outputs, dim=1)
-    out[out >= threshold] = 1
-    out[out < threshold] = 0
+def process_outputs(out):
+
+    out[out >= 0] = 1
+    out[out < 0] = 0
     out = out.type(torch.int)
     out = out.cpu().detach().numpy().reshape(-1)
     return out

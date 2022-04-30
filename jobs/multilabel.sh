@@ -28,5 +28,3 @@ echo Performing testing.
 python prediction_ML.py
 
 echo Prediction completed.
-
-rm -r __pycache__/
