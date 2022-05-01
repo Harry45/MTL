@@ -49,7 +49,7 @@ def predict_probability(output: torch.Tensor) -> torch.Tensor:
     """
     output = output.clone()
     probability = torch.sigmoid(output)
-    probability = probability
+    probability = probability.cpu().detach().numpy().reshape(-1)
     return probability
 
 
