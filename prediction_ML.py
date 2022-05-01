@@ -19,13 +19,37 @@ import settings as st
 import utils.helpers as hp
 
 
-def process_outputs(out):
+def predict_class(output: torch.Tensor) -> torch.Tensor:
+    """Convert the logits into specific class. Number below 0 is assigned 0 else
+    assigned 1.
 
-    out[out >= 0] = 1
-    out[out < 0] = 0
-    out = out.type(torch.int)
-    out = out.cpu().detach().numpy().reshape(-1)
-    return out
+    Args:
+        output (torch.Tensor): the output from the neural network
+
+    Returns:
+        torch.Tensor: the outputs in binary format
+    """
+    # modify the output from the neural network
+    output[output >= 0] = 1
+    output[output < 0] = 0
+    output = output.type(torch.int)
+    output = output.cpu().detach().numpy().reshape(-1)
+    return output
+
+
+def predict_probability(output: torch.Tensor) -> torch.Tensor:
+    """Predict the probability of a specific class. Convert logits to
+    probabilities.
+
+    Args:
+        output (torch.Tensor): the output from the neural network
+
+    Returns:
+        torch.Tensor: the outputs as probabilities
+    """
+    probability = torch.sigmoid(output)
+    probability = probability.cpu().detach().numpy().reshape(-1)
+    return probability
 
 
 # we will normally evaluate on CPU (to maend if we want to predict on GPU)
@@ -48,19 +72,35 @@ criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 # criterion = nn.BCEWithLogitsLoss()
 
 record_outputs = list()
+record_prob = list()
 
 for images, targets in test_loader:
+
+    # images and targets to device (CPU or GPU)
     images, targets = map(lambda x: x.to(device), [images, targets])
 
+    # compute the outputs
     outputs = model(images)
-    loss = criterion(outputs, targets)
-    out = process_outputs(outputs)
+
+    # convert the logits into binary
+    out = predict_class(outputs)
+
+    # convert the logits into probabilities
+    prob = predict_probability(outputs)
+
+    # record the results
     record_outputs.append(out)
+    record_prob.append(prob)
 
-    print(targets.cpu().detach().numpy().reshape(-1))
-    print(out)
-    print('-'*100)
+    print(f'{"Targets":<25} : {targets.cpu().detach().numpy().reshape(-1)}')
+    print(f'{"Predicted Class": <25} : {out}')
+    print(f'{"Predicted Probability": <25} : {prob}')
+    print('-' * 100)
 
-record_df = pd.DataFrame(record_outputs, columns=['f' + str(i + 1) for i in range(st.NCLASS)])
+# convert the results to dataframes
+class_df = pd.DataFrame(record_outputs, columns=['f' + str(i + 1) for i in range(st.NCLASS)])
+prob_df = pd.DataFrame(record_prob, columns=['f' + str(i + 1) for i in range(st.NCLASS)])
 
-hp.save_pd_csv(record_df, 'results', 'predictions')
+# store the outputs
+hp.save_pd_csv(class_df, 'results', 'predictions_class')
+hp.save_pd_csv(prob_df, 'results', 'predictions_prob')
