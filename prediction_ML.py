@@ -88,7 +88,7 @@ for images, targets in test_loader:
     record_prob.append(prob)
 
     print(f'{"Targets"} : {targets.cpu().detach().numpy().reshape(-1)}')
-    print(f'{"Predictions"} : {outputs}')
+    print(f'{"Predictions"} : {outputs.cpu().detach().numpy().reshape(-1)}')
     # print(f'{"Predicted Class": <25} : {out}')
     # print(f'{"Predicted Probability": <25} : {prob}')
     print('-' * 100)
