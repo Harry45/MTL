@@ -98,5 +98,5 @@ class_df = pd.DataFrame(record_outputs, columns=['f' + str(i + 1) for i in range
 prob_df = pd.DataFrame(record_prob, columns=['f' + str(i + 1) for i in range(st.NCLASS)])
 
 # store the outputs
-hp.save_pd_csv(class_df, 'results', 'predictions_class')
-hp.save_pd_csv(prob_df, 'results', 'predictions_prob')
+# hp.save_pd_csv(class_df, 'results', 'predictions_class')
+# hp.save_pd_csv(prob_df, 'results', 'predictions_prob')
