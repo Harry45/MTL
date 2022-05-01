@@ -75,7 +75,7 @@ for images, targets in test_loader:
 
     # compute the outputs
     outputs = model(images)
-    print(outputs)
+    # print(outputs)
 
     # convert the logits into binary
     out = predict_class(outputs)
@@ -87,8 +87,8 @@ for images, targets in test_loader:
     record_outputs.append(out)
     record_prob.append(prob)
 
-    # print(f'{"Targets":<25} : {targets.cpu().detach().numpy().reshape(-1)}')
-    # print(f'{"Predictions":<25} : {outputs}')
+    print(f'{"Targets":<25} : {targets.cpu().detach().numpy().reshape(-1)}')
+    print(f'{"Predictions":<25} : {outputs}')
     # print(f'{"Predicted Class": <25} : {out}')
     # print(f'{"Predicted Probability": <25} : {prob}')
     print('-' * 100)
