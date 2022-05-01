@@ -51,7 +51,7 @@ criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
-epochs = 1
+epochs = 30
 
 for epoch in range(epochs):
     print("Epoch [{} / {}]".format(epoch + 1, epochs))
@@ -64,7 +64,6 @@ for epoch in range(epochs):
         images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
-        print(outputs)
         loss = criterion(outputs, targets)
 
         optimizer.zero_grad()
