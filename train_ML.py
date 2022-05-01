@@ -96,6 +96,6 @@ for epoch in range(epochs):
     writer.add_scalar('val_loss', val_loss, epoch)
 
     print(f"Validation : Loss={val_loss:.2e}")
-    print("-"*30)
+    print("-" * 30)
 
-    torch.save(model.state_dict(), model_path + 'resnet_18_multilabel_' + str(epoch) + '.pth')
+    # torch.save(model.state_dict(), model_path + 'resnet_18_multilabel_' + str(epoch) + '.pth')
