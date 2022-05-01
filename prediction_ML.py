@@ -93,7 +93,7 @@ for images, targets in test_loader:
     # augment count
     count += 1
 
-    if (count+1) % 5000 == 0:
+    if (count + 1) % 5000 == 0:
         print("Processed {}/{}".format(count, ndata))
 
     # print(f'{"Targets": <25} : {targets}')
