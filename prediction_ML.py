@@ -30,10 +30,10 @@ def predict_class(output: torch.Tensor) -> torch.Tensor:
         torch.Tensor: the outputs in binary format
     """
     # modify the output from the neural network
+    output = output.cpu().detach().numpy().reshape(-1)
     output[output >= 0] = 1
     output[output < 0] = 0
     output = output.type(torch.int)
-    output = output.cpu().detach().numpy().reshape(-1)
     return output
 
 
@@ -47,8 +47,9 @@ def predict_probability(output: torch.Tensor) -> torch.Tensor:
     Returns:
         torch.Tensor: the outputs as probabilities
     """
+    output = output.cpu().detach().numpy().reshape(-1)
     probability = torch.sigmoid(output)
-    probability = probability.cpu().detach().numpy().reshape(-1)
+    probability = probability
     return probability
 
 
