@@ -33,7 +33,7 @@ def predict_class(output: torch.Tensor) -> torch.Tensor:
     output = output.cpu().detach().numpy().reshape(-1)
     output[output >= 0] = 1
     output[output < 0] = 0
-    output = output.type(torch.int)
+    output = output.astype(int)
     return output
 
 
