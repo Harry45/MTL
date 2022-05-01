@@ -76,25 +76,21 @@ for images, targets in test_loader:
 
     # compute the outputs
     outputs = model(images)
-    print(outputs)
 
     # convert the logits into binary
     out = predict_class(outputs)
-    print(outputs)
 
     # convert the logits into probabilities
     prob = predict_probability(outputs)
-    print(outputs)
 
     # record the results
     record_outputs.append(out)
     record_prob.append(prob)
 
-    # print(f'{"Targets"} : {targets.cpu().detach().numpy().reshape(-1)}')
-    # print(f'{"Predictions"} : {outputs.cpu().detach().numpy().reshape(-1)}')
-    # print(outputs)
-    # print(f'{"Predicted Class": <25} : {out}')
-    # print(f'{"Predicted Probability": <25} : {prob}')
+    print(f'{"Targets": <25d} : {targets}')
+    print(f'{"Predictions": <25d} : {outputs}')
+    print(f'{"Predicted Class": <25} : {out}')
+    print(f'{"Predicted Probability": <25} : {prob}')
     print('-' * 100)
 
 # convert the results to dataframes
