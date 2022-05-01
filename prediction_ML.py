@@ -32,7 +32,7 @@ def process_outputs(out):
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load the model
-loaded_model = torch.load('../ml-models/resnet_18_multilabel.pth')
+loaded_model = torch.load('../ml-models/resnet_18_multilabel_24.pth')
 model = MultiLabelNet(backbone="resnet18")
 model.to(device)
 model.load_state_dict(loaded_model)
@@ -57,10 +57,10 @@ for images, targets in test_loader:
     out = process_outputs(outputs)
     record_outputs.append(out)
 
-    # print(targets.cpu().detach().numpy().reshape(-1))
-    # print(out)
-    # print('-'*100)
+    print(targets.cpu().detach().numpy().reshape(-1))
+    print(out)
+    print('-'*100)
 
-record_df = pd.DataFrame(record_outputs, columns=['f'+str(i+1) for i in range(st.NCLASS)])
+record_df = pd.DataFrame(record_outputs, columns=['f' + str(i + 1) for i in range(st.NCLASS)])
 
 hp.save_pd_csv(record_df, 'results', 'predictions')
