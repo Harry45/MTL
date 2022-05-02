@@ -94,7 +94,7 @@ for images, targets in test_loader:
     count += 1
 
     if (count + 1) % 5000 == 0:
-        print("Processed {}/{}".format(count, ndata))
+        print("Processed {}/{}".format(count + 1, ndata))
 
     # print(f'{"Targets": <25} : {targets}')
     # print(f'{"Predictions": <25} : {outputs}')
