@@ -64,14 +64,14 @@ CLASS_WEIGHTS = [0.00208189, 0.00436793, 0.0660458, 0.00453844, 0.00268769,
 # Multi-task Learning
 # ------------------------------------------------------------------------------------------------
 
-COLUMNS = [
-    'Smooth', 'Featured or Disk', 'Artifact', 'Edge On Disk (Yes)', 'Edge On Disk (No)', 'Spiral Arms (Yes)',
-    'Spiral Arms (No)', 'Strong Bar', 'Weak Bar', 'No Bar', 'Central Bulge (Dominant)', 'Central Bulge (Large)',
-    'Central Bulge (Moderate)', 'Central Bulge (Small)', 'Central Bulge (None)', 'Round', 'In Between', 'Cigar Shaped',
-    'Bulge (Boxy)', 'Bulge (None)', 'Bulge (Rounded)', 'Spiral Winding (Tight)', 'Spiral Winding (Medium)',
-    'Spiral Winding (Loose)', 'Spiral Arms (1)', 'Spiral Arms (2)', 'Spiral Arms (3)', 'Spiral Arms (4)',
-    'Spiral Arms (More Than 4)', 'Spiral Arms (cannot tell)', 'Merging (None)', 'Merging (Minor Disturbance)',
-    'Merging (Major Disturbance)', 'Merging (Merger)']
+# COLUMNS = [
+#     'Smooth', 'Featured or Disk', 'Artifact', 'Edge On Disk (Yes)', 'Edge On Disk (No)', 'Spiral Arms (Yes)',
+#     'Spiral Arms (No)', 'Strong Bar', 'Weak Bar', 'No Bar', 'Central Bulge (Dominant)', 'Central Bulge (Large)',
+#     'Central Bulge (Moderate)', 'Central Bulge (Small)', 'Central Bulge (None)', 'Round', 'In Between', 'Cigar Shaped',
+#     'Bulge (Boxy)', 'Bulge (None)', 'Bulge (Rounded)', 'Spiral Winding (Tight)', 'Spiral Winding (Medium)',
+#     'Spiral Winding (Loose)', 'Spiral Arms (1)', 'Spiral Arms (2)', 'Spiral Arms (3)', 'Spiral Arms (4)',
+#     'Spiral Arms (More Than 4)', 'Spiral Arms (cannot tell)', 'Merging (None)', 'Merging (Minor Disturbance)',
+#     'Merging (Major Disturbance)', 'Merging (Merger)']
 
 LABELS = {
 
