@@ -7,6 +7,7 @@ Description: Network for the Galaxy Zoo project.
 # Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
 # Project: Multi-Task Learning for Galaxy Zoo
 
+from email.generator import DecodedGenerator
 import torch
 import torch.nn as nn
 from torchvision import models
@@ -61,6 +62,56 @@ class MultiLabelNet(nn.Module):
         features = self.head(features)
 
         return features
+
+
+class MultiTaskNet(nn.Module):
+    """Neural Network architecture for the multi-task problem.
+
+    Args:
+        backbone (str, optional): The network architecture to use. Defaults to "resnet18".
+        output_size (dict, optional): A dictionary of the output size. Defaults to None.
+
+    Raises:
+        ValueError: If the backbone is not supported.
+    """
+
+    def __init__(self, backbone="resnet18", output_size: dict = None):
+
+        super(MultiTaskNet, self).__init__()
+
+        if backbone not in models.__dict__:
+            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
+
+        # Create a backbone network from the pretrained models provided in torchvision.models
+        self.backbone = models.__dict__[backbone](pretrained=True, progress=True)
+
+        # change the first layer because we are using grayscale images
+        self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+
+        # number of features as output by the network
+        num_embedding = list(self.backbone.modules())[-1].out_features
+
+        self.decoders = nn.ModuleDict()
+
+        for i in range(st.NUM_TASKS):
+            self.decoders['task_' + str(i + 1)] = Decoder(num_embedding, output_size['task_' + str(i + 1)])
+
+    def forward(self, img: torch.Tensor) -> dict:
+        """Forward pass through the encoder and decoders for each task.
+
+        Args:
+            img (torch.Tensor): The image to be passed through the encoder.
+
+        Returns:
+            dict: The output of the decoders for each task.
+        """
+        shared_feature = self.backbone(img)
+
+        tasks = {}
+        for i in range(st.NUM_TASKS):
+            tasks['task_' + str(i + 1)] = self.decoders['task_' + str(i + 1)](shared_feature)
+
+        return tasks
 
 
 class Encoder(nn.Module):
