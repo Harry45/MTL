@@ -96,16 +96,19 @@ def generate_labels(dataframe: pd.DataFrame, nan_value: int = 0, save: bool = Fa
     # the vote fraction
     vote_fraction = dataframe[dataframe.columns[['fraction' in dataframe.columns[i] for i in range(ncols)]]]
 
+    # the labels
+    labels = vote_fraction.copy()
+
     # rename the columns according to labels in Decision Tree
-    vote_fraction.rename(st.MAPPING, axis=1, inplace=True)
+    labels.rename(st.MAPPING, axis=1, inplace=True)
 
     # Order the columns according the tasks defined
-    vote_fraction = vote_fraction[st.TASKS_ORDERED]
+    labels = labels[st.TASKS_ORDERED]
 
     # generate the labels
-    labels = vote_fraction.copy()
-    labels[vote_fraction >= 0.5] = 1
-    labels[vote_fraction < 0.5] = 0
+
+    labels[labels >= 0.5] = 1
+    labels[labels < 0.5] = 0
 
     # we fill the NaN with -100 (we will be using cross-entropy later where we
     # can specify ignore_index = -100)
