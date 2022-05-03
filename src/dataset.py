@@ -25,9 +25,10 @@ class DECaLSDataset(Dataset):
     Args:
         mode (str): train, validate or test
         augment (bool): whether to augment the data or not. Default is False.
+        multi_task (bool): whether to use multi-task learning or not. Default is False.
     """
 
-    def __init__(self, mode: str, augment: bool = False):
+    def __init__(self, mode: str, augment: bool = False, multi_task: bool = False):
 
         path = os.path.join(st.DATA_DIR, 'ml')
 
@@ -62,6 +63,9 @@ class DECaLSDataset(Dataset):
         # create the transform
         self.transform = transforms.Compose(trans)
 
+        # if we choose to use multi-task learning, we add the labels
+        self.multi_task = multi_task
+
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
         """Load and image and its corresponding label.
 
@@ -72,11 +76,16 @@ class DECaLSDataset(Dataset):
             Tuple[torch.Tensor, torch.Tensor]: the image and its label.
         """
 
-        # get the image paths for the pair
+        # get the image path
         image_path = os.path.join(st.DECALS, self.desc['png_loc'].iloc[idx])
 
-        # get the classes for the pair
-        label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))
+        # get the labels
+        if self.multi_task:
+            label = self.desc.iloc[idx, 2:].values.astype(int)
+            label = [torch.from_numpy(label[st.LABELS['task_' + str(i + 1)]]) for i in range(st.NUM_TASKS)]
+
+        else:
+            label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))
 
         # load the image
         image = Image.open(image_path).convert("RGB")

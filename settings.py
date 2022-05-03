@@ -90,7 +90,8 @@ LABELS = {
 
 }
 
-TASKS_ORDERED = np.concatenate([LABELS['task_' + str(i + 1)] for i in range(10)])
+NUM_TASKS = 10
+TASKS_ORDERED = np.concatenate([LABELS['task_' + str(i + 1)] for i in range(NUM_TASKS)])
 
 MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
            'smooth-or-featured_featured-or-disk_fraction': 'Featured or Disk',
