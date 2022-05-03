@@ -9,11 +9,71 @@ Description: This file is for processing the data to an appropriate format.
 
 import os
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 
 # our own functions and scripts
 import utils.helpers as hp
 import settings as st
+
+
+def find_labels(tasks: dict) -> np.ndarray:
+    """Find the labels of a galaxy given the outputs from the neural network.
+
+    The tasks is a dictionary in the following format:
+
+    tasks = {
+        'task_1' : [1, 0, 0]
+        'task_2' : [0, 1, 0]
+        .
+        .
+        .
+        'task_10': [0, 0, 1, 0, 0]
+    }
+
+    Args:
+        tasks (dict): A dictionary with outputs from the neural network.
+
+    Returns:
+        np.ndarray: A numpy array consisting of the labels.
+    """
+
+    labels = {k: np.asarray(v) for k, v in st.LABELS.items()}
+    tasks = {k: np.asarray(v) for k, v in tasks.items()}
+
+    record_labels = []
+
+    record_labels.append(labels['task_1'][tasks['task_1'] == 1])
+
+    if tasks['task_1'][0] == 1:
+
+        record_labels.append(labels['task_2'][tasks['task_2'] == 1])
+        record_labels.append(labels['task_4'][tasks['task_4'] == 1])
+
+    elif tasks['task_1'][1] == 1:
+        record_labels.append(labels['task_3'][tasks['task_3'] == 1])
+
+        if tasks['task_3'][0] == 1:
+            record_labels.append(labels['task_5'][tasks['task_5'] == 1])
+            record_labels.append(labels['task_4'][tasks['task_4'] == 1])
+
+        else:
+            record_labels.append(labels['task_6'][tasks['task_6'] == 1])
+            record_labels.append(labels['task_7'][tasks['task_7'] == 1])
+
+            if tasks['task_7'][0] == 1:
+                record_labels.append(labels['task_8'][tasks['task_8'] == 1])
+                record_labels.append(labels['task_9'][tasks['task_9'] == 1])
+                record_labels.append(labels['task_10'][tasks['task_10'] == 1])
+                record_labels.append(labels['task_4'][tasks['task_4'] == 1])
+
+            else:
+                record_labels.append(labels['task_10'][tasks['task_10'] == 1])
+                record_labels.append(labels['task_4'][tasks['task_4'] == 1])
+
+    record_labels = np.asarray(record_labels).reshape(-1)
+
+    return record_labels
 
 
 def generate_labels(dataframe: pd.DataFrame, nan_value: int = 0, save: bool = False) -> pd.DataFrame:
@@ -35,6 +95,12 @@ def generate_labels(dataframe: pd.DataFrame, nan_value: int = 0, save: bool = Fa
 
     # the vote fraction
     vote_fraction = dataframe[dataframe.columns[['fraction' in dataframe.columns[i] for i in range(ncols)]]]
+
+    # rename the columns according to labels in Decision Tree
+    vote_fraction.rename(st.MAPPING, axis=1, inplace=True)
+
+    # Order the columns according the tasks defined
+    vote_fraction = vote_fraction[st.TASKS_ORDERED]
 
     # generate the labels
     labels = vote_fraction.copy()
