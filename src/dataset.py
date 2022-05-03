@@ -82,7 +82,8 @@ class DECaLSDataset(Dataset):
         # get the labels
         if self.multi_task:
             label = self.desc.iloc[idx, 2:].values.astype(int)
-            label = [torch.from_numpy(label[st.LABELS['task_' + str(i + 1)]]) for i in range(st.NUM_TASKS)]
+            label = [torch.from_numpy(label[st.LABELS['task_' + str(i + 1)]].values.astype(int))
+                     for i in range(st.NUM_TASKS)]
 
         else:
             label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))
