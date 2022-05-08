@@ -92,7 +92,9 @@ for epoch in range(epochs):
     losses = []
 
     for images, targets in val_loader:
-        images, targets = map(lambda x: x.to(device), [images, targets])
+        images = images.to(device)
+
+        # images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
         loss = criterion(loss_func, outputs, targets)
