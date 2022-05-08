@@ -102,8 +102,6 @@ class MultiTaskNet(nn.Module):
             else:
                 self.decoders['task_' + str(i + 1)] = Decoder(num_embedding, output_size['task_' + str(i + 1)])
 
-        print(self.decoders)
-
     def forward(self, img: torch.Tensor) -> dict:
         """Forward pass through the encoder and decoders for each task.
 
@@ -127,7 +125,13 @@ class DecoderResNet(nn.Module):
     def __init__(self, kernel_size: int, output_size: int):
         super(DecoderResNet, self).__init__()
 
+        # record the output size
+        self.output_size = output_size
+
+        # kernel size
         self.kernel_size = kernel_size
+
+        # padding
         self.padding = (self.kernel_size - 1) // 2
 
         # first convolutional layer
@@ -142,8 +146,11 @@ class DecoderResNet(nn.Module):
         # batch normalisation
         self.bn2 = nn.BatchNorm1d(1)
 
-        # record the output size
-        self.output_size = output_size
+        # last layer
+        self.last_layer = nn.Sequential(
+            nn.Dropout(0.5),
+            nn.Linear(250, self.output_size)
+        )
 
     def forward(self, features):
 
@@ -173,13 +180,9 @@ class DecoderResNet(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
 
-        # last layer
-        last_layer = nn.Sequential(
-            nn.Dropout(0.5),
-            nn.Linear(out.shape[2], self.output_size)
-        )
+        out = out.view(out.shape[0], -1)
 
-        out = last_layer(out)
+        out = self.last_layer(out)
 
         return out
 
