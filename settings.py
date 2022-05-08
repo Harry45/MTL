@@ -16,7 +16,7 @@ DECALS = '/data/phys-zooniverse/chri5177/galaxy_zoo/decals/dr5/png'
 # The Zenodo directory - we will need this for the description of each image (volunteers' votes)
 ZENODO = '/data/phys-zooniverse/phys2286/data/zenodo'
 
-# Data from my folder (will also contains the tags that Mike shared)
+# Data from my folder
 DATA_DIR = '/data/phys-zooniverse/phys2286/data'
 
 # ---------------------------------------------------------------------
@@ -67,11 +67,11 @@ CLASS_WEIGHTS = [0.00208189, 0.00436793, 0.0660458, 0.00453844, 0.00268769,
 # COLUMNS = [
 #     'Smooth', 'Featured or Disk', 'Artifact', 'Edge On Disk (Yes)', 'Edge On Disk (No)', 'Spiral Arms (Yes)',
 #     'Spiral Arms (No)', 'Strong Bar', 'Weak Bar', 'No Bar', 'Central Bulge (Dominant)', 'Central Bulge (Large)',
-#     'Central Bulge (Moderate)', 'Central Bulge (Small)', 'Central Bulge (None)', 'Round', 'In Between', 'Cigar Shaped',
-#     'Bulge (Boxy)', 'Bulge (None)', 'Bulge (Rounded)', 'Spiral Winding (Tight)', 'Spiral Winding (Medium)',
-#     'Spiral Winding (Loose)', 'Spiral Arms (1)', 'Spiral Arms (2)', 'Spiral Arms (3)', 'Spiral Arms (4)',
-#     'Spiral Arms (More Than 4)', 'Spiral Arms (cannot tell)', 'Merging (None)', 'Merging (Minor Disturbance)',
-#     'Merging (Major Disturbance)', 'Merging (Merger)']
+#     'Central Bulge (Moderate)', 'Central Bulge (Small)', 'Central Bulge (None)', 'Round', 'In Between',
+#     'Cigar Shaped', 'Bulge (Boxy)', 'Bulge (None)', 'Bulge (Rounded)', 'Spiral Winding (Tight)',
+#     'Spiral Winding (Medium)', 'Spiral Winding (Loose)', 'Spiral Arms (1)', 'Spiral Arms (2)', 'Spiral Arms (3)',
+#     'Spiral Arms (4)', 'Spiral Arms (More Than 4)', 'Spiral Arms (cannot tell)', 'Merging (None)',
+#     'Merging (Minor Disturbance)', 'Merging (Major Disturbance)', 'Merging (Merger)']
 
 LABELS = {
 
@@ -140,3 +140,9 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
            'merging_minor-disturbance_fraction': 'Merging (Minor Disturbance)',
            'merging_major-disturbance_fraction': 'Merging (Major Disturbance)',
            'merging_merger_fraction': 'Merging (Merger)'}
+
+# tasks to do
+# - change threshold
+# - split data into train, validate, test [80%, 5%, 15%]
+# - (multi-label) plot hamming loss as function of threshold
+# - (multi-task) train network on all tasks (and all data)

@@ -10,7 +10,6 @@ Description: Dataloader for the Galaxy Zoo (DECaLS) data.
 import os
 from typing import Tuple
 import torch
-import torch.nn as nn
 from torch.utils.data import Dataset
 from torchvision import transforms
 from PIL import Image

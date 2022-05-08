@@ -106,7 +106,6 @@ def generate_labels(dataframe: pd.DataFrame, nan_value: int = 0, save: bool = Fa
     labels = labels[st.TASKS_ORDERED]
 
     # generate the labels
-
     labels[labels >= 0.5] = 1
     labels[labels < 0.5] = 0
 
