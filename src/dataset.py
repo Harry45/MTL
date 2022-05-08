@@ -10,6 +10,7 @@ Description: Dataloader for the Galaxy Zoo (DECaLS) data.
 import os
 from typing import Tuple
 import torch
+import torch.nn as nn
 from torch.utils.data import Dataset
 from torchvision import transforms
 from PIL import Image
@@ -81,9 +82,15 @@ class DECaLSDataset(Dataset):
 
         # get the labels
         if self.multi_task:
-            label = self.desc.iloc[idx, 2:]
-            label = [torch.from_numpy(label[st.LABELS['task_' + str(i + 1)]].values.astype(int))
-                     for i in range(st.NUM_TASKS)]
+            dummy_labels = self.desc.iloc[idx, 2:]
+
+            label = nn.ModuleDict()
+            for i in range(st.NUM_TASKS):
+                task = dummy_labels[st.LABELS['task_' + str(i + 1)]].values.astype(int)
+                label['task_' + str(i + 1)] = torch.from_numpy(task)
+
+            # label = [torch.from_numpy(label[st.LABELS['task_' + str(i + 1)]].values.astype(int))
+            #          for i in range(st.NUM_TASKS)]
 
         else:
             label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))
