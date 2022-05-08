@@ -270,6 +270,6 @@ class Encoder(nn.Module):
             single image if we are using ResNet-18.
         """
 
-        features = self.backbone(img)
+        features = self.encoder(img)
 
         return features
