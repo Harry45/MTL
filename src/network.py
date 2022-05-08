@@ -10,6 +10,7 @@ Description: Network for the Galaxy Zoo project.
 from email.generator import DecodedGenerator
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torchvision import models
 
 # our scripts and functions
@@ -75,7 +76,7 @@ class MultiTaskNet(nn.Module):
         ValueError: If the backbone is not supported.
     """
 
-    def __init__(self, backbone="resnet18", output_size: dict = None):
+    def __init__(self, backbone="resnet18", output_size: dict = None, resnet_task: bool = True, kernel_size: int = 3):
 
         super(MultiTaskNet, self).__init__()
 
@@ -94,7 +95,12 @@ class MultiTaskNet(nn.Module):
         self.decoders = nn.ModuleDict()
 
         for i in range(st.NUM_TASKS):
-            self.decoders['task_' + str(i + 1)] = Decoder(num_embedding, output_size['task_' + str(i + 1)])
+
+            if resnet_task:
+                self.decoders['task_' + str(i + 1)] = DecoderResNet(output_size['task_' + str(i + 1)], kernel_size)
+
+            else:
+                self.decoders['task_' + str(i + 1)] = Decoder(num_embedding, output_size['task_' + str(i + 1)])
 
     def forward(self, img: torch.Tensor) -> dict:
         """Forward pass through the encoder and decoders for each task.
@@ -114,42 +120,66 @@ class MultiTaskNet(nn.Module):
         return tasks
 
 
-class Encoder(nn.Module):
-    """Initialise the encoder.
+class DecoderResNet(nn.Module):
 
-    Args:
-        backbone (str, optional): The choice of the deep learning architecture. Defaults to "resnet18".
+    def __init__(self, kernel_size: int, output_size: int):
+        super(DecoderResNet, self).__init__()
 
-    Raises:
-        ValueError: If the backbone is not supported.
-    """
+        self.kernel_size = kernel_size
+        self.padding = (self.kernel_size - 1) // 2
 
-    def __init__(self, backbone="resnet18"):
-        super(Encoder, self).__init__()
+        # first convolutional layer
+        self.conv1 = nn.Conv1d(1, 1, kernel_size=self.kernel_size, stride=2, padding=self.padding)
 
-        if backbone not in models.__dict__:
-            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
+        # batch normalisation
+        self.bn1 = nn.BatchNorm1d(1)
 
-        # Create a backbone network from the pretrained models provided in torchvision.models
-        self.encoder = models.__dict__[backbone](pretrained=False, progress=True)
+        # second convolutional layer
+        self.conv2 = nn.Conv1d(1, 1, kernel_size=self.kernel_size, stride=2, padding=self.padding)
 
-        # change the first layer because we are using grayscale images
-        self.encoder.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        # batch normalisation
+        self.bn2 = nn.BatchNorm1d(1)
 
-    def forward(self, img: torch.Tensor) -> torch.Tensor:
-        """Forward pass through the encoder.
+        # record the output size
+        self.output_size = output_size
 
-        Args:
-            img (torch.Tensor): The image to be passed through the encoder.
+    def forward(self, features):
 
-        Returns:
-            torch.Tensor: The output of the encoder of shape [1, 1000] for a
-            single image if we are using ResNet-18.
-        """
+        features = features.unsqueeze(1)
+        nfeatures = features.shape[2]
 
-        features = self.backbone(img)
+        out = self.conv1(features)
+        out = self.bn1(out)
+        out = F.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
 
-        return features
+        # we have to pad the output so we can add it to the input
+        nout = out.shape[2]
+        left = (nout - nfeatures) // 2
+        right = nout - nfeatures - left
+        out = F.pad(out, (left, right), mode='constant', value=0)
+
+        # add the output to the input
+        out += features
+        out = F.relu(out)
+
+        # second set of operations
+        out = self.conv1(out)
+        out = self.bn1(out)
+        out = F.relu(out)
+        out = self.conv2(out)
+        out = self.bn2(out)
+
+        # last layer
+        last_layer = nn.Sequential(
+            nn.Dropout(0.5),
+            nn.Linear(out.shape[2], self.output_size)
+        )
+
+        out = last_layer(out)
+
+        return out
 
 
 class Decoder(nn.Module):
@@ -181,5 +211,43 @@ class Decoder(nn.Module):
             torch.Tensor: The output of the decoder.
         """
         features = self.layers(embedding_vector)
+
+        return features
+
+
+class Encoder(nn.Module):
+    """Initialise the encoder.
+
+    Args:
+        backbone (str, optional): The choice of the deep learning architecture. Defaults to "resnet18".
+
+    Raises:
+        ValueError: If the backbone is not supported.
+    """
+
+    def __init__(self, backbone="resnet18"):
+        super(Encoder, self).__init__()
+
+        if backbone not in models.__dict__:
+            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
+
+        # Create a backbone network from the pretrained models provided in torchvision.models
+        self.encoder = models.__dict__[backbone](pretrained=False, progress=True)
+
+        # change the first layer because we are using grayscale images
+        self.encoder.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+
+    def forward(self, img: torch.Tensor) -> torch.Tensor:
+        """Forward pass through the encoder.
+
+        Args:
+            img (torch.Tensor): The image to be passed through the encoder.
+
+        Returns:
+            torch.Tensor: The output of the encoder is of shape [1, 1000] for a
+            single image if we are using ResNet-18.
+        """
+
+        features = self.backbone(img)
 
         return features
