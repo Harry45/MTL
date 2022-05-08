@@ -156,8 +156,8 @@ class DecoderResNet(nn.Module):
 
         # we have to pad the output so we can add it to the input
         nout = out.shape[2]
-        left = (nout - nfeatures) // 2
-        right = nout - nfeatures - left
+        left = (nfeatures - nout) // 2
+        right = nfeatures - nout - left
         out = F.pad(out, (left, right), mode='constant', value=0)
 
         # add the output to the input
