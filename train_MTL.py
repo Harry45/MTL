@@ -37,23 +37,47 @@ val_loader = DataLoader(dataset=val_dataset, batch_size=64, shuffle=False)
 
 # define the model
 model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK)
-model.to(device)
+# model.to(device)
 
 # set the optimizer
-optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
-loss_func = nn.BCEWithLogitsLoss()
+# optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
+# loss_func = nn.BCEWithLogitsLoss()
 
 
-def criterion(loss_function, outputs: nn.ModuleDict, labels: dict) -> torch.tensor:
-    losses = 0
+# def criterion(loss_function, outputs: nn.ModuleDict, labels: dict) -> torch.tensor:
+#     losses = 0
 
-    # we can add a weight for each loss
-    # for example, we can calculate the fraction of objects which go into Nodes
-    # 2, 3, 4 and so forth and then weight the loss accordingly
-    for i, key in enumerate(outputs):
-        losses += loss_function(outputs[key], labels[key].float().to(device))
-    return losses
+#     # we can add a weight for each loss
+#     # for example, we can calculate the fraction of objects which go into Nodes
+#     # 2, 3, 4 and so forth and then weight the loss accordingly
+#     for i, key in enumerate(outputs):
+#         losses += loss_function(outputs[key], labels[key].float().to(device))
+#     return losses
 
+
+class MultiTaskLoss(nn.Module):
+    def __init__(self, tasks):
+        super(MultiTaskLoss, self).__init__()
+        self.tasks = tasks
+        self.sigma = nn.Parameter(torch.ones(st.NUM_TASKS))
+        self.loss_func = nn.BCEWithLogitsLoss()
+
+    def forward(self, images, targets):
+        losses = []
+        outputs = self.tasks(images)
+
+        for _, key in enumerate(targets):
+
+            loss_per_task = self.loss_func(outputs[key], targets[key].float().to(device))
+            losses.append(loss_per_task)
+
+        losses = torch.Tensor(losses).to(device) / self.sigma**2
+        total_loss = losses.sum() + torch.log(self.sigma.prod())
+        return total_loss
+
+
+mtl = MultiTaskLoss(model).to(device)
+optimizer = torch.optim.Adam(mtl.parameters(), lr=1E-4, weight_decay=1E-5)
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
@@ -72,7 +96,8 @@ for epoch in range(epochs):
         # images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
-        loss = criterion(loss_func, outputs, targets)
+        # loss = criterion(loss_func, outputs, targets)
+        loss = mtl(images, targets)
 
         optimizer.zero_grad()
         loss.backward()
@@ -97,7 +122,8 @@ for epoch in range(epochs):
         # images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
-        loss = criterion(loss_func, outputs, targets)
+        # loss = criterion(loss_func, outputs, targets)
+        loss = mtl(images, targets)
 
         losses.append(loss.item())
 
