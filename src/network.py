@@ -157,6 +157,7 @@ class DecoderResNet(nn.Module):
         features = features.unsqueeze(1)
         nfeatures = features.shape[2]
 
+        # first set of operations
         out = self.conv1(features)
         out = self.bn1(out)
         out = F.relu(out)
@@ -180,8 +181,8 @@ class DecoderResNet(nn.Module):
         out = self.conv2(out)
         out = self.bn2(out)
 
+        # apply last layer
         out = out.view(out.shape[0], -1)
-
         out = self.last_layer(out)
 
         return out

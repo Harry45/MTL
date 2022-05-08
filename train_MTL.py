@@ -36,7 +36,7 @@ train_loader = DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
 val_loader = DataLoader(dataset=val_dataset, batch_size=64, shuffle=False)
 
 # define the model
-model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK)
+model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK, resnet_task=True)
 model.to(device)
 
 # set the optimizer
