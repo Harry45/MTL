@@ -102,6 +102,8 @@ class MultiTaskNet(nn.Module):
             else:
                 self.decoders['task_' + str(i + 1)] = Decoder(num_embedding, output_size['task_' + str(i + 1)])
 
+        print(self.decoders)
+
     def forward(self, img: torch.Tensor) -> dict:
         """Forward pass through the encoder and decoders for each task.
 
