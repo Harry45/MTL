@@ -146,3 +146,4 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
 # - split data into train, validate, test [80%, 5%, 15%]
 # - (multi-label) plot hamming loss as function of threshold
 # - (multi-task) train network on all tasks (and all data)
+# - (multi-task) prediction
