@@ -97,7 +97,7 @@ class MultiTaskNet(nn.Module):
         for i in range(st.NUM_TASKS):
 
             if resnet_task:
-                self.decoders['task_' + str(i + 1)] = DecoderResNet(output_size['task_' + str(i + 1)], kernel_size)
+                self.decoders['task_' + str(i + 1)] = DecoderResNet(kernel_size, output_size['task_' + str(i + 1)])
 
             else:
                 self.decoders['task_' + str(i + 1)] = Decoder(num_embedding, output_size['task_' + str(i + 1)])
