@@ -80,14 +80,16 @@ class MultiTaskNet(nn.Module):
 
         super(MultiTaskNet, self).__init__()
 
-        if backbone not in models.__dict__:
-            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
+        # if backbone not in models.__dict__:
+        #     raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
 
-        # Create a backbone network from the pretrained models provided in torchvision.models
-        self.backbone = models.__dict__[backbone](pretrained=True, progress=True)
+        # # Create a backbone network from the pretrained models provided in torchvision.models
+        # self.backbone = models.__dict__[backbone](pretrained=True, progress=True)
 
-        # change the first layer because we are using grayscale images
-        self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        # # change the first layer because we are using grayscale images
+        # self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+
+        self.backbone = Encoder(backbone)
 
         # number of features as output by the network
         num_embedding = list(self.backbone.modules())[-1].out_features
@@ -121,8 +123,15 @@ class MultiTaskNet(nn.Module):
 
 
 class DecoderResNet(nn.Module):
+    """A ResNet implementation, applied to 1D features
+
+    Args:
+        kernel_size (int): The kernel size of the convolutional layers.
+        output_size (int): The output size of the final layer.
+    """
 
     def __init__(self, kernel_size: int, output_size: int):
+
         super(DecoderResNet, self).__init__()
 
         # record the output size
@@ -152,13 +161,20 @@ class DecoderResNet(nn.Module):
             nn.Linear(250, self.output_size)
         )
 
-    def forward(self, features):
+    def forward(self, embedding_vector: torch.Tensor) -> torch.Tensor:
+        """Forward pass through the decoder.
 
-        features = features.unsqueeze(1)
-        nfeatures = features.shape[2]
+        Args:
+            embedding_vector (torch.Tensor): The embedding vector to be passed through the decoder.
+
+        Returns:
+            torch.Tensor: The output of the decoder.
+        """
+        embedding_vector = embedding_vector.unsqueeze(1)
+        nfeatures = embedding_vector.shape[2]
 
         # first set of operations
-        out = self.conv1(features)
+        out = self.conv1(embedding_vector)
         out = self.bn1(out)
         out = F.relu(out)
         out = self.conv2(out)
@@ -171,7 +187,7 @@ class DecoderResNet(nn.Module):
         out = F.pad(out, (left, right), mode='constant', value=0)
 
         # add the output to the input
-        out += features
+        out += embedding_vector
         out = F.relu(out)
 
         # second set of operations

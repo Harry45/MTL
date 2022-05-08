@@ -85,7 +85,7 @@ def criterion(loss_function, outputs: nn.ModuleDict, labels: dict) -> torch.tens
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
-epochs = 30
+epochs = 5
 
 for epoch in range(epochs):
     print("Epoch [{} / {}]".format(epoch + 1, epochs))
