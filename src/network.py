@@ -7,7 +7,6 @@ Description: Network for the Galaxy Zoo project.
 # Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
 # Project: Multi-Task Learning for Galaxy Zoo
 
-from email.generator import DecodedGenerator
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -30,14 +29,8 @@ class MultiLabelNet(nn.Module):
     def __init__(self, backbone="resnet18"):
         super(MultiLabelNet, self).__init__()
 
-        if backbone not in models.__dict__:
-            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
-
-        # Create a backbone network from the pretrained models provided in torchvision.models
-        self.backbone = models.__dict__[backbone](pretrained=True, progress=True)
-
-        # change the first layer because we are using grayscale images
-        self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+        # create the backbone network
+        self.backbone = Encoder(backbone)
 
         # number of features as output by the network
         num_embedding = list(self.backbone.modules())[-1].out_features
@@ -77,18 +70,9 @@ class MultiTaskNet(nn.Module):
     """
 
     def __init__(self, backbone="resnet18", output_size: dict = None, resnet_task: bool = True, kernel_size: int = 3):
-
         super(MultiTaskNet, self).__init__()
 
-        # if backbone not in models.__dict__:
-        #     raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
-
-        # # Create a backbone network from the pretrained models provided in torchvision.models
-        # self.backbone = models.__dict__[backbone](pretrained=True, progress=True)
-
-        # # change the first layer because we are using grayscale images
-        # self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
-
+        # create the backbone network
         self.backbone = Encoder(backbone)
 
         # number of features as output by the network
@@ -131,7 +115,6 @@ class DecoderResNet(nn.Module):
     """
 
     def __init__(self, kernel_size: int, output_size: int):
-
         super(DecoderResNet, self).__init__()
 
         # record the output size
@@ -156,6 +139,7 @@ class DecoderResNet(nn.Module):
         self.bn2 = nn.BatchNorm1d(1)
 
         # last layer
+        # we needed the value 250 to build this sequential layer
         self.last_layer = nn.Sequential(
             nn.Dropout(0.5),
             nn.Linear(250, self.output_size)
