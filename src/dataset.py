@@ -80,27 +80,24 @@ class DECaLSDataset(Dataset):
         # get the image path
         image_path = os.path.join(st.DECALS, self.desc['png_loc'].iloc[idx])
 
-        # get the labels
-        if self.multi_task:
-            dummy_labels = self.desc.iloc[idx, 2:]
-
-            label = nn.ModuleDict()
-            for i in range(st.NUM_TASKS):
-                task = dummy_labels[st.LABELS['task_' + str(i + 1)]].values.astype(int)
-                label['task_' + str(i + 1)] = torch.from_numpy(task)
-
-            # label = [torch.from_numpy(label[st.LABELS['task_' + str(i + 1)]].values.astype(int))
-            #          for i in range(st.NUM_TASKS)]
-
-        else:
-            label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))
-
         # load the image
         image = Image.open(image_path).convert("RGB")
 
         # transform the images
         if self.transform:
             image = self.transform(image).float()
+
+        # get the labels
+        if self.multi_task:
+            dummy_labels = self.desc.iloc[idx, 2:]
+
+            label = dict()
+            for i in range(st.NUM_TASKS):
+                task = dummy_labels[st.LABELS['task_' + str(i + 1)]].values.astype(int)
+                label['task_' + str(i + 1)] = torch.from_numpy(task)
+
+        else:
+            label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))
 
         return image, label
 
