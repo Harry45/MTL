@@ -73,6 +73,7 @@ class MultiTaskLoss(nn.Module):
 
         losses = torch.Tensor(losses).to(device) / self.sigma**2
         total_loss = losses.sum() + torch.log(self.sigma.prod())
+        print(self.sigma)
         return total_loss
 
 
@@ -81,7 +82,7 @@ optimizer = torch.optim.Adam(mtl.parameters(), lr=1E-4, weight_decay=1E-5)
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
-epochs = 5
+epochs = 30
 
 for epoch in range(epochs):
     print("Epoch [{} / {}]".format(epoch + 1, epochs))
