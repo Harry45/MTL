@@ -76,12 +76,11 @@ def find_labels(tasks: dict) -> np.ndarray:
     return record_labels
 
 
-def generate_labels(dataframe: pd.DataFrame, nan_value: int = 0, save: bool = False) -> pd.DataFrame:
+def generate_labels(dataframe: pd.DataFrame, save: bool = False) -> pd.DataFrame:
     """Process the vote fraction and turn them into labels.
 
     Args:
         dataframe (pd.DataFrame): Name of the file which we want to process
-        nan_value (int) : Replace all the NaNs with the value specified
         save (bool, optional): Option to save the file. Defaults to False.
 
     Raises:
