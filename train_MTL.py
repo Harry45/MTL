@@ -10,7 +10,7 @@ Description: Train the network for the multi-task case.
 import os
 import torch
 import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 # our scripts and functions
