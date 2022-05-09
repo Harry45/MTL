@@ -11,6 +11,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 import pandas as pd
+import numpy as np
 
 # our scripts and functions
 from src.network import MultiTaskNet
