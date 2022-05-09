@@ -142,4 +142,4 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
            'merging_merger_fraction': 'Merging (Merger)'}
 
 # tasks to do
-# - remove rows where there are repeated fractions
+# - metrics: take rows where there is only one label per task and calculate the metrics
