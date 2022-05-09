@@ -38,6 +38,7 @@ def predict_labels(output: nn.ModuleDict) -> dict:
 
         # convert to probability
         probabilities = torch.nn.functional.softmax(logits, dim=1)
+        probabilities = probabilities.view(-1)
 
         print(logits)
         print(probabilities)
