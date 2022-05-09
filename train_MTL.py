@@ -19,7 +19,7 @@ from src.dataset import DECaLSDataset
 import settings as st
 
 out_path = './output/'
-model_path = '../ml-models/'
+model_path = '../mtl-models/'
 
 # make the folders
 os.makedirs(out_path, exist_ok=True)
@@ -54,34 +54,6 @@ def criterion(loss_function, outputs: nn.ModuleDict, labels: dict) -> torch.tens
         losses += loss_function(outputs[key], labels[key].float().to(device))
     return losses
 
-
-# --------------------------------------------------------------
-# class MultiTaskLoss(nn.Module):
-#     def __init__(self, tasks):
-#         super(MultiTaskLoss, self).__init__()
-#         self.tasks = tasks
-#         self.sigma = nn.Parameter(torch.ones(st.NUM_TASKS))
-#         self.loss_func = nn.BCEWithLogitsLoss()
-
-#     def forward(self, images, targets):
-#         losses = []
-#         outputs = self.tasks(images)
-
-#         for _, key in enumerate(targets):
-
-#             loss_per_task = self.loss_func(outputs[key], targets[key].float().to(device))
-#             losses.append(loss_per_task)
-
-#         losses = torch.Tensor(losses).to(device) / self.sigma**2
-#         total_loss = losses.sum() + torch.log(self.sigma.prod())
-#         print(self.sigma)
-#         return total_loss
-
-
-# mtl = MultiTaskLoss(model).to(device)
-# optimizer = torch.optim.Adam(mtl.parameters(), lr=1E-4, weight_decay=1E-5)
-
-# --------------------------------------------------------------
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
@@ -136,4 +108,32 @@ for epoch in range(epochs):
     print(f"Validation : Loss={val_loss:.2e}")
     print("-" * 30)
 
-    # torch.save(model.state_dict(), model_path + 'resnet_18_multilabel_' + str(epoch) + '.pth')
+    torch.save(model.state_dict(), model_path + 'resnet_18_multitask_' + str(epoch) + '.pth')
+
+# --------------------------------------------------------------
+# class MultiTaskLoss(nn.Module):
+#     def __init__(self, tasks):
+#         super(MultiTaskLoss, self).__init__()
+#         self.tasks = tasks
+#         self.sigma = nn.Parameter(torch.ones(st.NUM_TASKS))
+#         self.loss_func = nn.BCEWithLogitsLoss()
+
+#     def forward(self, images, targets):
+#         losses = []
+#         outputs = self.tasks(images)
+
+#         for _, key in enumerate(targets):
+
+#             loss_per_task = self.loss_func(outputs[key], targets[key].float().to(device))
+#             losses.append(loss_per_task)
+
+#         losses = torch.Tensor(losses).to(device) / self.sigma**2
+#         total_loss = losses.sum() + torch.log(self.sigma.prod())
+#         print(self.sigma)
+#         return total_loss
+
+
+# mtl = MultiTaskLoss(model).to(device)
+# optimizer = torch.optim.Adam(mtl.parameters(), lr=1E-4, weight_decay=1E-5)
+
+# --------------------------------------------------------------
