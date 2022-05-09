@@ -36,8 +36,6 @@ def predict_labels(output: nn.ModuleDict) -> dict:
 
         # predictions for the i^th task (logits)
         logits = output['task_' + str(i + 1)]
-        logits = logits.clone()
-        print(logits)
 
         # convert to probability
         probabilities = torch.nn.functional.softmax(logits, dim=1)
