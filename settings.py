@@ -147,17 +147,3 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
 # - (multi-label) plot hamming loss as function of threshold
 # - (multi-task) train network on all tasks (and all data)
 # - (multi-task) prediction
-# - (multi-task and multi-label) - to assign equal probability for threshold, for example
-# if there are three objects, then probability = 1/3 and then compute threshold
-
-# {'task_1': 3,
-#  'task_2': 3,
-#  'task_3': 2,
-#  'task_4': 4,
-#  'task_5': 3,
-#  'task_6': 3,
-#  'task_7': 2,
-#  'task_8': 3,
-#  'task_9': 6,
-#  'task_10': 5
-#  }

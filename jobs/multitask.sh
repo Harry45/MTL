@@ -18,7 +18,9 @@ export CONPREFIX=$DATA/pytorch-env39
 source activate $CONPREFIX
 
 echo Training started.
+date "+%H:%M:%S   %d/%m/%y"
 
 time python train_MTL.py
 
+date "+%H:%M:%S   %d/%m/%y"
 echo Training completed.
