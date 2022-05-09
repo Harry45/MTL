@@ -39,6 +39,7 @@ def predict_labels(output: nn.ModuleDict) -> dict:
         # convert to probability
         probabilities = torch.nn.functional.softmax(logits, dim=0)
 
+        print(logits)
         print(probabilities)
 
         # assign 1 to the label having maximum probability
