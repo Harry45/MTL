@@ -47,6 +47,8 @@ def predict_labels(output: nn.ModuleDict) -> dict:
         class_index = np.zeros(n_prob, dtype=int)
         class_index[index] = 1
 
+        print(class_index)
+
         # record the predictions
         pred['task_' + str(i + 1)] = class_index
 
