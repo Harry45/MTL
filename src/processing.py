@@ -105,13 +105,26 @@ def generate_labels(dataframe: pd.DataFrame, nan_value: int = 0, save: bool = Fa
     # Order the columns according the tasks defined
     labels = labels[st.TASKS_ORDERED]
 
-    # generate the labels
-    labels[labels >= 0.5] = 1
-    labels[labels < 0.5] = 0
+    rec = []
+    for i in range(st.NUM_TASKS):
 
-    # we fill the NaN with -100 (we will be using cross-entropy later where we
-    # can specify ignore_index = -100)
-    labels.fillna(nan_value, inplace=True)
+        sub = labels[st.LABELS['task_' + str(i + 1)]]
+        prob = 1. / st.LABELS_PER_TASK['task_' + str(i + 1)]
+        sub[sub >= prob] = 1
+        sub[sub < prob] = 0
+        sub.fillna(nan_value, inplace=True)
+
+        rec.append(sub)
+
+    labels = pd.concat(rec)
+
+    # # generate the labels
+    # labels[labels >= 0.5] = 1
+    # labels[labels < 0.5] = 0
+
+    # # we fill the NaN with -100 (we will be using cross-entropy later where we
+    # # can specify ignore_index = -100)
+    # labels.fillna(nan_value, inplace=True)
 
     # convert to all the labels to integers
     labels = labels.astype(int)
