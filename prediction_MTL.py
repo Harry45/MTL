@@ -40,13 +40,11 @@ def predict_labels(output: nn.ModuleDict) -> dict:
         # convert to probability
         probabilities = torch.nn.functional.softmax(logits, dim=1)
         probabilities = probabilities.view(-1)
-
-        print(logits)
-        print(probabilities)
+        n_prob = probabilities.shape[0]
 
         # assign 1 to the label having maximum probability
         index = probabilities.max(0).indices.item()
-        class_index = np.zeros_like(probabilities, dtype=int)
+        class_index = np.zeros(n_prob, dtype=int)
         class_index[index] = 1
 
         # record the predictions
