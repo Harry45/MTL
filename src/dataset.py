@@ -37,21 +37,21 @@ class DECaLSDataset(Dataset):
             print(f'The number of training points is {self.desc.shape[0]}')
 
             # to remove later
-            self.desc = self.desc.iloc[0:5000]
+            # self.desc = self.desc.iloc[0:5000]
 
         elif mode == 'test':
             self.desc = hp.load_csv(path, 'test')
             print(f'The number of test points is {self.desc.shape[0]}')
 
             # to remove later
-            self.desc = self.desc.iloc[0:200]
+            # self.desc = self.desc.iloc[0:200]
 
         else:
             self.desc = hp.load_csv(path, 'validate')
             print(f'The number of validation points is {self.desc.shape[0]}')
 
             # to remove later
-            self.desc = self.desc.iloc[0:200]
+            # self.desc = self.desc.iloc[0:200]
 
         # transformations
         trans = st.TRANS
