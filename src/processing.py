@@ -41,39 +41,37 @@ def find_labels(tasks: dict) -> np.ndarray:
     labels = {k: np.asarray(v) for k, v in st.LABELS.items()}
     tasks = {k: np.asarray(v) for k, v in tasks.items()}
 
-    record_labels = []
+    record_labels = pd.DataFrame(columns=['task_' + str(i + 1) for i in range(st.NUM_TASKS)])
 
     # Sometimes, there can be more than 1 label (due to equal probability by volunteers' votes)
     # If this happens, we pick the first selected label, hence [0] below.
-    record_labels.append(labels['task_1'][tasks['task_1'] == 1][0])
+    record_labels['task_1'] = [labels['task_1'][tasks['task_1'] == 1]]
 
     if tasks['task_1'][0] == 1:
 
-        record_labels.append(labels['task_2'][tasks['task_2'] == 1][0])
-        record_labels.append(labels['task_4'][tasks['task_4'] == 1][0])
+        record_labels['task_2'] = labels['task_2'][tasks['task_2'] == 1]
+        record_labels['task_4'] = labels['task_4'][tasks['task_4'] == 1]
 
     elif tasks['task_1'][1] == 1:
-        record_labels.append(labels['task_3'][tasks['task_3'] == 1][0])
+        record_labels['task_3'] = labels['task_3'][tasks['task_3'] == 1]
 
         if tasks['task_3'][0] == 1:
-            record_labels.append(labels['task_5'][tasks['task_5'] == 1][0])
-            record_labels.append(labels['task_4'][tasks['task_4'] == 1][0])
+            record_labels['task_5'] = labels['task_5'][tasks['task_5'] == 1]
+            record_labels['task_4'] = labels['task_4'][tasks['task_4'] == 1]
 
         else:
-            record_labels.append(labels['task_6'][tasks['task_6'] == 1][0])
-            record_labels.append(labels['task_7'][tasks['task_7'] == 1][0])
+            record_labels['task_6'] = labels['task_6'][tasks['task_6'] == 1]
+            record_labels['task_7'] = labels['task_7'][tasks['task_7'] == 1]
 
             if tasks['task_7'][0] == 1:
-                record_labels.append(labels['task_8'][tasks['task_8'] == 1][0])
-                record_labels.append(labels['task_9'][tasks['task_9'] == 1][0])
-                record_labels.append(labels['task_10'][tasks['task_10'] == 1][0])
-                record_labels.append(labels['task_4'][tasks['task_4'] == 1][0])
+                record_labels['task_8'] = labels['task_8'][tasks['task_8'] == 1]
+                record_labels['task_9'] = labels['task_9'][tasks['task_9'] == 1]
+                record_labels['task_10'] = labels['task_10'][tasks['task_10'] == 1]
+                record_labels['task_4'] = labels['task_4'][tasks['task_4'] == 1]
 
             else:
-                record_labels.append(labels['task_10'][tasks['task_10'] == 1][0])
-                record_labels.append(labels['task_4'][tasks['task_4'] == 1][0])
-
-    record_labels = np.asarray(record_labels).reshape(-1)
+                record_labels['task_10'] = labels['task_10'][tasks['task_10'] == 1]
+                record_labels['task_4'] = labels['task_4'][tasks['task_4'] == 1]
 
     return record_labels
 
