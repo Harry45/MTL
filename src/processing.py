@@ -45,7 +45,7 @@ def find_labels(tasks: dict) -> np.ndarray:
 
     # Sometimes, there can be more than 1 label (due to equal probability by volunteers' votes)
     # If this happens, we pick the first selected label, hence [0] below.
-    record_labels['task_1'] = [labels['task_1'][tasks['task_1'] == 1]]
+    record_labels['task_1'] = labels['task_1'][tasks['task_1'] == 1]
 
     if tasks['task_1'][0] == 1:
 
