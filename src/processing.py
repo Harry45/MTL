@@ -45,33 +45,33 @@ def find_labels(tasks: dict) -> np.ndarray:
 
     # Sometimes, there can be more than 1 label (due to equal probability by volunteers' votes)
     # If this happens, we pick the first selected label, hence [0] below.
-    record_labels.at[0, 'task_2'] = list(labels['task_1'][tasks['task_1'] == 1])
+    record_labels.at[0, 'task_1'] = list(labels['task_1'][tasks['task_1'] == 1])
 
     if tasks['task_1'][0] == 1:
 
         record_labels.at[0, 'task_2'] = list(labels['task_2'][tasks['task_2'] == 1])
-        record_labels.at[0, 'task_2'] = list(labels['task_4'][tasks['task_4'] == 1])
+        record_labels.at[0, 'task_4'] = list(labels['task_4'][tasks['task_4'] == 1])
 
     elif tasks['task_1'][1] == 1:
-        record_labels.at[0, 'task_2'] = list(labels['task_3'][tasks['task_3'] == 1])
+        record_labels.at[0, 'task_3'] = list(labels['task_3'][tasks['task_3'] == 1])
 
         if tasks['task_3'][0] == 1:
-            record_labels.at[0, 'task_2'] = list(labels['task_5'][tasks['task_5'] == 1])
-            record_labels.at[0, 'task_2'] = list(labels['task_4'][tasks['task_4'] == 1])
+            record_labels.at[0, 'task_5'] = list(labels['task_5'][tasks['task_5'] == 1])
+            record_labels.at[0, 'task_4'] = list(labels['task_4'][tasks['task_4'] == 1])
 
         else:
-            record_labels.at[0, 'task_2'] = list(labels['task_6'][tasks['task_6'] == 1])
-            record_labels.at[0, 'task_2'] = list(labels['task_7'][tasks['task_7'] == 1])
+            record_labels.at[0, 'task_6'] = list(labels['task_6'][tasks['task_6'] == 1])
+            record_labels.at[0, 'task_7'] = list(labels['task_7'][tasks['task_7'] == 1])
 
             if tasks['task_7'][0] == 1:
-                record_labels.at[0, 'task_2'] = list(labels['task_8'][tasks['task_8'] == 1])
-                record_labels.at[0, 'task_2'] = list(labels['task_9'][tasks['task_9'] == 1])
-                record_labels.at[0, 'task_2'] = list(labels['task_10'][tasks['task_10'] == 1])
-                record_labels.at[0, 'task_2'] = list(labels['task_4'][tasks['task_4'] == 1])
+                record_labels.at[0, 'task_8'] = list(labels['task_8'][tasks['task_8'] == 1])
+                record_labels.at[0, 'task_9'] = list(labels['task_9'][tasks['task_9'] == 1])
+                record_labels.at[0, 'task_10'] = list(labels['task_10'][tasks['task_10'] == 1])
+                record_labels.at[0, 'task_4'] = list(labels['task_4'][tasks['task_4'] == 1])
 
             else:
-                record_labels.at[0, 'task_2'] = list(labels['task_10'][tasks['task_10'] == 1])
-                record_labels.at[0, 'task_2'] = list(labels['task_4'][tasks['task_4'] == 1])
+                record_labels.at[0, 'task_10'] = list(labels['task_10'][tasks['task_10'] == 1])
+                record_labels.at[0, 'task_4'] = list(labels['task_4'][tasks['task_4'] == 1])
 
     return record_labels
 
