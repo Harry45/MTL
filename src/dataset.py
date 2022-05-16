@@ -44,7 +44,7 @@ class DECaLSDataset(Dataset):
             print(f'The number of test points is {self.desc.shape[0]}')
 
             # to remove later
-            self.desc = self.desc.iloc[0:200]
+            # self.desc = self.desc.iloc[0:200]
 
         else:
             self.desc = hp.load_csv(path, 'validate')

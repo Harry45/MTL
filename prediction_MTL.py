@@ -57,7 +57,7 @@ def predict_labels(output: nn.ModuleDict) -> dict:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load the model
-loaded_model = torch.load('../mtl-models/resnet_18_multitask_12.pth')
+loaded_model = torch.load('../mtl-models/resnet_18_multitask_18.pth')
 model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK, resnet_task=True)
 model.to(device)
 model.load_state_dict(loaded_model)
