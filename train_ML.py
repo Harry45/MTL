@@ -37,6 +37,7 @@ val_loader = DataLoader(dataset=val_dataset, batch_size=64, shuffle=False)
 
 # define the model
 model = MultiLabelNet(backbone="resnet18")
+model = nn.DataParallel(model)
 model.to(device)
 
 # set the optimizer

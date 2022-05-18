@@ -50,7 +50,7 @@ def criterion(loss_function, outputs: nn.ModuleDict, labels: dict) -> torch.tens
     # we can add a weight for each loss
     # for example, we can calculate the fraction of objects which go into Nodes
     # 2, 3, 4 and so forth and then weight the loss accordingly
-    for i, key in enumerate(outputs):
+    for _, key in enumerate(outputs):
         losses += loss_function(outputs[key], labels[key].float().to(device))
     return losses
 
