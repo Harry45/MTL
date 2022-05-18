@@ -22,5 +22,5 @@ date "+%H:%M:%S   %d/%m/%y"
 
 time python train_MTL.py
 
-date "+%H:%M:%S   %d/%m/%y"
 echo Training completed.
+date "+%H:%M:%S   %d/%m/%y"
