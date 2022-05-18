@@ -64,7 +64,7 @@ for epoch in range(epochs):
         images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
-        loss = criterion(outputs, targets)
+        loss = criterion(outputs, targets.float())
 
         optimizer.zero_grad()
         loss.backward()
@@ -87,7 +87,7 @@ for epoch in range(epochs):
         images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
-        loss = criterion(outputs, targets)
+        loss = criterion(outputs, targets.float())
 
         losses.append(loss.item())
 
