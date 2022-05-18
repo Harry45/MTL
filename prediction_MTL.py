@@ -93,4 +93,4 @@ for images, targets in test_loader:
         print("Processed {}/{}".format(count + 1, ndata))
 
 # store the outputs
-hp.save_pickle(record_outputs, 'results', 'predictions_mtl')
+hp.save_pickle(record_outputs, 'results', 'MTL_predictions')

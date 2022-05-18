@@ -29,8 +29,8 @@ os.makedirs(model_path, exist_ok=True)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # create the dataloader
-train_dataset = DECaLSDataset(mode='train', augment=False)
-val_dataset = DECaLSDataset(mode='validate', augment=False)
+train_dataset = DECaLSDataset(mode='train', augment=False, multi_task=False)
+val_dataset = DECaLSDataset(mode='validate', augment=False, multi_task=False)
 
 train_loader = DataLoader(dataset=train_dataset, batch_size=64, shuffle=True)
 val_loader = DataLoader(dataset=val_dataset, batch_size=64, shuffle=False)
@@ -97,4 +97,4 @@ for epoch in range(epochs):
     print(f"Validation : Loss={val_loss:.2e}")
     print("-" * 30)
 
-    # torch.save(model.state_dict(), model_path + 'resnet_18_multilabel_' + str(epoch) + '.pth')
+    torch.save(model.state_dict(), model_path + 'resnet_18_multilabel_' + str(epoch) + '.pth')

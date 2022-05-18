@@ -167,6 +167,11 @@ def split_data(dataframe: pd.DataFrame, val_size: float = 0.20, test_size: float
         hp.save_pd_csv(record['validate'], path, 'validate')
         hp.save_pd_csv(record['test'], path, 'test')
 
+        # save a copy on the Github repository
+        hp.save_pd_csv(record['train'], 'ml', 'train')
+        hp.save_pd_csv(record['validate'], 'ml', 'validate')
+        hp.save_pd_csv(record['test'], 'ml', 'test')
+
     return record
 
 

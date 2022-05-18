@@ -96,16 +96,10 @@ for images, targets in test_loader:
     if (count + 1) % 5000 == 0:
         print("Processed {}/{}".format(count + 1, ndata))
 
-    # print(f'{"Targets": <25} : {targets}')
-    # print(f'{"Predictions": <25} : {outputs}')
-    # print(f'{"Predicted Class": <25} : {out}')
-    # print(f'{"Predicted Probability": <25} : {prob}')
-    # print('-' * 100)
-
 # convert the results to dataframes
 class_df = pd.DataFrame(record_outputs, columns=['f' + str(i + 1) for i in range(st.NCLASS)])
 prob_df = pd.DataFrame(record_prob, columns=['f' + str(i + 1) for i in range(st.NCLASS)])
 
 # store the outputs
-hp.save_pd_csv(class_df, 'results', 'predictions_class')
-hp.save_pd_csv(prob_df, 'results', 'predictions_prob')
+hp.save_pd_csv(class_df, 'results', 'ML_predictions_class')
+hp.save_pd_csv(prob_df, 'results', 'ML_predictions_prob')
