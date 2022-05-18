@@ -7,7 +7,7 @@
 #SBATCH --mem-per-cpu=32G
 #SBATCH --partition=long
 #SBATCH --cluster=htc
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
 nvidia-smi
