@@ -1,0 +1,150 @@
+Wed May 18 10:41:13 2022       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 460.84       Driver Version: 460.84       CUDA Version: 11.2     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  Tesla V100-SXM2...  On   | 00000000:06:00.0 Off |                    0 |
+| N/A   33C    P0    43W / 163W |      0MiB / 32510MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
+Training started.
+10:41:15   18/05/22
+The number of training points is 202628
+The number of validation points is 12665
+Epoch [1 / 30]
+Training   : Loss=1.27e-02
+Validation : Loss=1.33e-02
+------------------------------
+Epoch [2 / 30]
+Training   : Loss=6.38e-03
+Validation : Loss=7.35e-03
+------------------------------
+Epoch [3 / 30]
+Training   : Loss=5.44e-03
+Validation : Loss=6.00e-03
+------------------------------
+Epoch [4 / 30]
+Training   : Loss=5.36e-03
+Validation : Loss=6.08e-03
+------------------------------
+Epoch [5 / 30]
+Training   : Loss=5.24e-03
+Validation : Loss=6.52e-03
+------------------------------
+Epoch [6 / 30]
+Training   : Loss=5.09e-03
+Validation : Loss=6.94e-03
+------------------------------
+Epoch [7 / 30]
+Training   : Loss=4.96e-03
+Validation : Loss=5.96e-03
+------------------------------
+Epoch [8 / 30]
+Training   : Loss=4.79e-03
+Validation : Loss=5.70e-03
+------------------------------
+Epoch [9 / 30]
+Training   : Loss=4.65e-03
+Validation : Loss=5.76e-03
+------------------------------
+Epoch [10 / 30]
+Training   : Loss=4.35e-03
+Validation : Loss=5.88e-03
+------------------------------
+Epoch [11 / 30]
+Training   : Loss=4.10e-03
+Validation : Loss=5.58e-03
+------------------------------
+Epoch [12 / 30]
+Training   : Loss=3.85e-03
+Validation : Loss=5.98e-03
+------------------------------
+Epoch [13 / 30]
+Training   : Loss=3.62e-03
+Validation : Loss=5.37e-03
+------------------------------
+Epoch [14 / 30]
+Training   : Loss=3.40e-03
+Validation : Loss=5.88e-03
+------------------------------
+Epoch [15 / 30]
+Training   : Loss=3.22e-03
+Validation : Loss=5.32e-03
+------------------------------
+Epoch [16 / 30]
+Training   : Loss=2.93e-03
+Validation : Loss=5.56e-03
+------------------------------
+Epoch [17 / 30]
+Training   : Loss=2.72e-03
+Validation : Loss=5.28e-03
+------------------------------
+Epoch [18 / 30]
+Training   : Loss=2.54e-03
+Validation : Loss=5.57e-03
+------------------------------
+Epoch [19 / 30]
+Training   : Loss=2.39e-03
+Validation : Loss=5.32e-03
+------------------------------
+Epoch [20 / 30]
+Training   : Loss=2.24e-03
+Validation : Loss=5.53e-03
+------------------------------
+Epoch [21 / 30]
+Training   : Loss=2.12e-03
+Validation : Loss=5.57e-03
+------------------------------
+Epoch [22 / 30]
+Training   : Loss=1.94e-03
+Validation : Loss=5.57e-03
+------------------------------
+Epoch [23 / 30]
+Training   : Loss=1.83e-03
+Validation : Loss=5.35e-03
+------------------------------
+Epoch [24 / 30]
+Training   : Loss=1.75e-03
+Validation : Loss=5.48e-03
+------------------------------
+Epoch [25 / 30]
+Training   : Loss=1.64e-03
+Validation : Loss=5.33e-03
+------------------------------
+Epoch [26 / 30]
+Training   : Loss=1.52e-03
+Validation : Loss=5.62e-03
+------------------------------
+Epoch [27 / 30]
+Training   : Loss=1.44e-03
+Validation : Loss=5.46e-03
+------------------------------
+Epoch [28 / 30]
+Training   : Loss=1.32e-03
+Validation : Loss=5.63e-03
+------------------------------
+Epoch [29 / 30]
+Training   : Loss=1.23e-03
+Validation : Loss=5.40e-03
+------------------------------
+Epoch [30 / 30]
+Training   : Loss=1.18e-03
+Validation : Loss=5.75e-03
+------------------------------
+
+real	5m40.815s
+user	3m47.650s
+sys	0m11.820s
+Training completed.
+10:46:56   18/05/22
