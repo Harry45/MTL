@@ -2,7 +2,7 @@
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=arrykrish@gmail.com
 #SBATCH --time=00:30:00
-#SBATCH --job-name=multitask
+#SBATCH --job-name=multilabel
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=32G
 #SBATCH --partition=short
@@ -20,7 +20,7 @@ source activate $CONPREFIX
 echo Training started.
 date "+%H:%M:%S   %d/%m/%y"
 
-python train_ML.py
+time python train_ML.py
 
 echo Training completed.
 date "+%H:%M:%S   %d/%m/%y"
