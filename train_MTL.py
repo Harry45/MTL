@@ -19,7 +19,7 @@ from src.dataset import DECaLSDataset
 import settings as st
 
 out_path = './output/'
-model_path = '/data/phys-zooniverse/phys2286/Models/mtl-models/'
+model_path = '/data/phys-zooniverse/phys2286/Models/mtl-models-21-05-22/'
 
 # make the folders
 os.makedirs(out_path, exist_ok=True)
