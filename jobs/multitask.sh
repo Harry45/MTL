@@ -1,13 +1,13 @@
 #!/bin/bash
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=arrykrish@gmail.com
-#SBATCH --time=00:30:00
+#SBATCH --time=125:00:00
 #SBATCH --job-name=multitask
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=32G
-#SBATCH --partition=short
+#SBATCH --partition=long
 #SBATCH --cluster=htc
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
 nvidia-smi
