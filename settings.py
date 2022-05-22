@@ -1,5 +1,5 @@
 """
-Description: This file contain the main settings for running the codes.
+Description: Main file contain the main settings for running the codes. 
 """
 
 # Author: Arrykrishna Mootoovaloo
