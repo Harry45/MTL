@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --mail-type=BEGIN,END
 #SBATCH --mail-user=arrykrish@gmail.com
-#SBATCH --time=00:15:00
+#SBATCH --time=00:10:00
 #SBATCH --job-name=multitask
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=32G
-#SBATCH --partition=interactive
+#SBATCH --partition=devel
 #SBATCH --cluster=htc
 #SBATCH --gres=gpu:v100:1
 #SBATCH --output=jobs/%j.out
