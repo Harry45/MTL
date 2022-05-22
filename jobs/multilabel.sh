@@ -26,3 +26,5 @@ time python train_ML.py
 
 echo Training completed.
 date "+%H:%M:%S   %d/%m/%y"
+
+gp multilabel job

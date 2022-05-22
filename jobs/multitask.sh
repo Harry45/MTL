@@ -29,3 +29,5 @@ time python train_MTL.py
 
 echo Training completed.
 date "+%H:%M:%S   %d/%m/%y"
+
+gp multitask job
