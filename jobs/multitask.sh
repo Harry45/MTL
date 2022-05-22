@@ -7,7 +7,7 @@
 #SBATCH --mem-per-cpu=32G
 #SBATCH --partition=short
 #SBATCH --cluster=htc
-#SBATCH --gres=gpu:v100:1
+#SBATCH --gres=gpu:1
 #SBATCH --output=jobs/%j.out
 
 echo Checking GPU
@@ -17,6 +17,7 @@ echo Checking Unloading modules
 module purge
 
 echo Loading modules
+module load CUDA/11.3.1
 module load Anaconda3
 export CONPREFIX=$DATA/pytorch-env39
 source activate $CONPREFIX
