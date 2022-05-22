@@ -10,6 +10,7 @@
 #SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
+echo Checking GPU
 nvidia-smi
 
 module purge
