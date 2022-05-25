@@ -10,11 +10,9 @@
 #SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
-echo Checking GPU
 nvidia-smi
 
 module purge
-module load CUDA/11.3.1
 module load Anaconda3
 export CONPREFIX=$DATA/pytorch-env39
 source activate $CONPREFIX
@@ -26,5 +24,3 @@ time python train_ML.py
 
 echo Training completed.
 date "+%H:%M:%S   %d/%m/%y"
-
-gp multilabel job
