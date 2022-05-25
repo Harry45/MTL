@@ -8,7 +8,7 @@ Description: Train the network for the multi-task case.
 # Project: Multi-Task Learning for Galaxy Zoo
 
 import os
-import time
+import datetime
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -19,8 +19,11 @@ from src.network import MultiTaskNet
 from src.dataset import DECaLSDataset
 import settings as st
 
+date = datetime.datetime.now()
+today = str(date.year) + '-' + str(date.month) + '-' + str(date.day)
+
 out_path = './output/'
-model_path = '/data/phys-zooniverse/phys2286/Models/mtl-models-' + time.strptime("%Y-%m-%d") + '/'
+model_path = '/data/phys-zooniverse/phys2286/Models/mtl-models-' + today + '/'
 
 # make the folders
 os.makedirs(out_path, exist_ok=True)
