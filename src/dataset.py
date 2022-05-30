@@ -37,7 +37,7 @@ class DECaLSDataset(Dataset):
             print(f'The number of training points is {self.desc.shape[0]}')
 
             # to remove later (this is for short experiments)
-            self.desc = self.desc.iloc[0:500]
+            self.desc = self.desc.iloc[0:5000]
 
         elif mode == 'test':
             self.desc = hp.load_csv(path, 'test')
