@@ -61,7 +61,7 @@ model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'ml-models
 loaded_model = torch.load(model_path + '/' + 'resnet_18_multilabel_29.pth')
 model = MultiLabelNet(backbone="resnet18")
 model.to(device)
-model.load_state_dict(loaded_model)
+model.load_state_dict(loaded_model, strict=False)
 model.eval()
 
 test_dataset = DECaLSDataset(mode='test', augment=False)
