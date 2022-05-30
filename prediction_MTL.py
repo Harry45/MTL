@@ -61,7 +61,7 @@ model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'mtl-model
 loaded_model = torch.load(model_path + '/' + 'resnet_18_multitask_29.pth')
 model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK, resnet_task=True)
 model.to(device)
-model.load_state_dict(loaded_model, strict=False)
+model.load_state_dict(loaded_model)
 model.eval()
 
 test_dataset = DECaLSDataset(mode='test', augment=False, multi_task=True)
