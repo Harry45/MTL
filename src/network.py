@@ -30,7 +30,14 @@ class MultiLabelNet(nn.Module):
         super(MultiLabelNet, self).__init__()
 
         # create the backbone network
-        self.backbone = Encoder(backbone)
+        if backbone not in models.__dict__:
+            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
+
+        # Create a backbone network from the pretrained models provided in torchvision.models
+        self.backbone = models.__dict__[backbone](pretrained=False, progress=True)
+
+        # change the first layer because we are using grayscale images
+        self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
 
         # number of features as output by the network
         num_embedding = list(self.backbone.modules())[-1].out_features
@@ -73,7 +80,14 @@ class MultiTaskNet(nn.Module):
         super(MultiTaskNet, self).__init__()
 
         # create the backbone network
-        self.backbone = Encoder(backbone)
+        if backbone not in models.__dict__:
+            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
+
+        # Create a backbone network from the pretrained models provided in torchvision.models
+        self.backbone = models.__dict__[backbone](pretrained=False, progress=True)
+
+        # change the first layer because we are using grayscale images
+        self.backbone.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
 
         # number of features as output by the network
         num_embedding = list(self.backbone.modules())[-1].out_features
@@ -141,7 +155,7 @@ class DecoderResNet(nn.Module):
         # last layer
         # we needed the value 250 to build this sequential layer
         self.last_layer = nn.Sequential(
-            nn.Dropout(0.5),
+            # nn.Dropout(0.5),
             nn.Linear(250, self.output_size)
         )
 
@@ -180,6 +194,8 @@ class DecoderResNet(nn.Module):
         out = F.relu(out)
         out = self.conv2(out)
         out = self.bn2(out)
+
+        out = F.relu(out)
 
         # apply last layer
         out = out.view(out.shape[0], -1)
@@ -221,39 +237,39 @@ class Decoder(nn.Module):
         return features
 
 
-class Encoder(nn.Module):
-    """Initialise the encoder.
+# class Encoder(nn.Module):
+#     """Initialise the encoder.
 
-    Args:
-        backbone (str, optional): The choice of the deep learning architecture. Defaults to "resnet18".
+#     Args:
+#         backbone (str, optional): The choice of the deep learning architecture. Defaults to "resnet18".
 
-    Raises:
-        ValueError: If the backbone is not supported.
-    """
+#     Raises:
+#         ValueError: If the backbone is not supported.
+#     """
 
-    def __init__(self, backbone="resnet18"):
-        super(Encoder, self).__init__()
+#     def __init__(self, backbone="resnet18"):
+#         super(Encoder, self).__init__()
 
-        if backbone not in models.__dict__:
-            raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
+#         if backbone not in models.__dict__:
+#             raise ValueError("Backbone {} not found in torchvision.models".format(backbone))
 
-        # Create a backbone network from the pretrained models provided in torchvision.models
-        self.encoder = models.__dict__[backbone](pretrained=False, progress=True)
+#         # Create a backbone network from the pretrained models provided in torchvision.models
+#         self.encoder = models.__dict__[backbone](pretrained=False, progress=True)
 
-        # change the first layer because we are using grayscale images
-        self.encoder.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
+#         # change the first layer because we are using grayscale images
+#         self.encoder.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
 
-    def forward(self, img: torch.Tensor) -> torch.Tensor:
-        """Forward pass through the encoder.
+#     def forward(self, img: torch.Tensor) -> torch.Tensor:
+#         """Forward pass through the encoder.
 
-        Args:
-            img (torch.Tensor): The image to be passed through the encoder.
+#         Args:
+#             img (torch.Tensor): The image to be passed through the encoder.
 
-        Returns:
-            torch.Tensor: The output of the encoder is of shape [1, 1000] for a
-            single image if we are using ResNet-18.
-        """
+#         Returns:
+#             torch.Tensor: The output of the encoder is of shape [1, 1000] for a
+#             single image if we are using ResNet-18.
+#         """
 
-        features = self.encoder(img)
+#         features = self.encoder(img)
 
-        return features
+#         return features
