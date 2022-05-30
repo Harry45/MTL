@@ -41,7 +41,7 @@ val_loader = DataLoader(dataset=val_dataset, batch_size=64, shuffle=False)
 
 # define the model
 model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK, resnet_task=True)
-model = nn.DataParallel(model)
+# model = nn.DataParallel(model)
 model.to(device)
 
 # set the optimizer
