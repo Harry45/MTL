@@ -51,7 +51,7 @@ class DECaLSDataset(Dataset):
             print(f'The number of validation points is {self.desc.shape[0]}')
 
             # to remove later (this is for short experiments)
-            self.desc = self.desc.iloc[0:200]
+            # self.desc = self.desc.iloc[0:200]
 
         # transformations
         trans = st.TRANS
