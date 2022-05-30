@@ -62,7 +62,8 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # loaded_model = torch.load(model_path + '/' + 'resnet_18_multitask_29.pth')
 
 
-loaded_model = torch.load('/data/phys-zooniverse/phys2286/Models/mtl-models-2022-5-30/resnet_18_multitask_29.pth')
+loaded_model = torch.load(
+    '/data/phys-zooniverse/phys2286/Models/mtl-models-2022-5-25/resnet_18_multitask_29.pth', map_location='cpu')
 model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK, resnet_task=True)
 model.to(device)
 model.load_state_dict(loaded_model)
