@@ -63,7 +63,7 @@ loaded_model = torch.load(model_path + '/resnet_18_multilabel_29.pth')
 
 model = MultiLabelNet(backbone="resnet18")
 model = nn.DataParallel(model, device_ids=[0])
-model.load_state_dict(loaded_model, strict=False)
+model.load_state_dict(loaded_model)
 model.to(device)
 model.eval()
 
