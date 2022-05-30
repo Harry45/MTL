@@ -6,7 +6,7 @@ Description: Prediction for the multi-label case.
 # Date: April 2022
 # Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
 # Project: Multi-Task Learning for Galaxy Zoo
-
+import os
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -57,8 +57,8 @@ def predict_probability(output: torch.Tensor) -> torch.Tensor:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load the model
-loaded_model = torch.load('../ml-models/resnet_18_multilabel_24.pth')
-model = MultiLabelNet(backbone="resnet18")
+model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'ml-models-2022-5-25')
+loaded_model = torch.load(model_path + '/' + 'resnet_18_multilabel_29.pth')
 model.to(device)
 model.load_state_dict(loaded_model)
 model.eval()
