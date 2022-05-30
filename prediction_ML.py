@@ -59,6 +59,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # load the model
 model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'ml-models-2022-5-25')
 loaded_model = torch.load(model_path + '/' + 'resnet_18_multilabel_29.pth')
+model = MultiLabelNet(backbone="resnet18")
 model.to(device)
 model.load_state_dict(loaded_model)
 model.eval()
