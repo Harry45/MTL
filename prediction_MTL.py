@@ -56,6 +56,7 @@ def predict_labels(output: nn.ModuleDict) -> dict:
 # we will normally evaluate on CPU (to maend if we want to predict on GPU)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
+print(device)
 # load the model
 # model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'mtl-models-2022-5-30')
 # print(model_path)
