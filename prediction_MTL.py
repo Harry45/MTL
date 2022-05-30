@@ -65,8 +65,10 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 loaded_model = torch.load(
     '/data/phys-zooniverse/phys2286/Models/mtl-models-2022-5-25/resnet_18_multitask_29.pth', map_location=device)
 model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK, resnet_task=True)
-model.module.to(device)
+
+model = nn.DataParallel(model, device_ids=[0])
 model.load_state_dict(loaded_model)
+model.to(device)
 model.eval()
 
 test_dataset = DECaLSDataset(mode='test', augment=False, multi_task=True)
