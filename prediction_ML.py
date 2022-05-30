@@ -57,11 +57,14 @@ def predict_probability(output: torch.Tensor) -> torch.Tensor:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load the model
-model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'ml-models-2022-5-30')
-loaded_model = torch.load(model_path + '/' + 'resnet_18_multilabel_29.pth')
+
+model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'ml-models-2022-5-25')
+loaded_model = torch.load(model_path + '/resnet_18_multilabel_29.pth')
+
 model = MultiLabelNet(backbone="resnet18")
-model.to(device)
+model = nn.DataParallel(model, device_ids=[0])
 model.load_state_dict(loaded_model, strict=False)
+model.to(device)
 model.eval()
 
 test_dataset = DECaLSDataset(mode='test', augment=False)
