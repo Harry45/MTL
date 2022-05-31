@@ -30,28 +30,28 @@ class DECaLSDataset(Dataset):
 
     def __init__(self, mode: str, augment: bool = False, multi_task: bool = False):
 
-        path = os.path.join(st.DATA_DIR, 'ml')
+        path = os.path.join(st.DATA_DIR, "ml")
 
-        if mode == 'train':
-            self.desc = hp.load_csv(path, 'train')
-            print(f'The number of training points is {self.desc.shape[0]}')
-
-            # to remove later (this is for short experiments)
-            # self.desc = self.desc.iloc[0:500]
-
-        elif mode == 'test':
-            self.desc = hp.load_csv(path, 'test')
-            print(f'The number of test points is {self.desc.shape[0]}')
+        if mode == "train":
+            self.desc = hp.load_csv(path, "train")
+            print(f"The number of training points is {self.desc.shape[0]}")
 
             # to remove later (this is for short experiments)
-            # self.desc = self.desc.iloc[0:200]
+            self.desc = self.desc.iloc[0:500]
+
+        elif mode == "test":
+            self.desc = hp.load_csv(path, "test")
+            print(f"The number of test points is {self.desc.shape[0]}")
+
+            # to remove later (this is for short experiments)
+            self.desc = self.desc.iloc[0:200]
 
         else:
-            self.desc = hp.load_csv(path, 'validate')
-            print(f'The number of validation points is {self.desc.shape[0]}')
+            self.desc = hp.load_csv(path, "validate")
+            print(f"The number of validation points is {self.desc.shape[0]}")
 
             # to remove later (this is for short experiments)
-            # self.desc = self.desc.iloc[0:200]
+            self.desc = self.desc.iloc[0:200]
 
         # transformations
         trans = st.TRANS
@@ -77,7 +77,7 @@ class DECaLSDataset(Dataset):
         """
 
         # get the image path
-        image_path = os.path.join(st.DECALS, self.desc['png_loc'].iloc[idx])
+        image_path = os.path.join(st.DECALS, self.desc["png_loc"].iloc[idx])
 
         # load the image
         image = Image.open(image_path).convert("RGB")
@@ -92,8 +92,8 @@ class DECaLSDataset(Dataset):
 
             label = dict()
             for i in range(st.NUM_TASKS):
-                task = dummy_labels[st.LABELS['task_' + str(i + 1)]].values.astype(int)
-                label['task_' + str(i + 1)] = torch.from_numpy(task)
+                task = dummy_labels[st.LABELS["task_" + str(i + 1)]].values.astype(int)
+                label["task_" + str(i + 1)] = torch.from_numpy(task)
 
         else:
             label = torch.from_numpy(self.desc.iloc[idx, 2:].values.astype(int))

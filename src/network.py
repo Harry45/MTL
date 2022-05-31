@@ -141,7 +141,7 @@ class DecoderResNet(nn.Module):
         # last layer
         # we needed the value 250 to build this sequential layer
         self.last_layer = nn.Sequential(
-            nn.Dropout(0.5),
+            # nn.Dropout(0.5),
             nn.Linear(250, self.output_size)
         )
 
