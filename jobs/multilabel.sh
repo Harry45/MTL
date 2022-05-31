@@ -10,6 +10,8 @@
 #SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
+echo Starting Multilabel
+
 nvidia-smi
 
 module purge
