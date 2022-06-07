@@ -56,7 +56,7 @@ def predict_labels(output: nn.ModuleDict) -> dict:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load the model
-model_date = 'mtl-models-2022-6-2'
+model_date = 'mtl-models-2022-5-31'
 model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', model_date)
 loaded_model = torch.load(model_path + '/resnet_18_multitask_29.pth')
 
