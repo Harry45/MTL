@@ -10,7 +10,6 @@ import os
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
-import pandas as pd
 import numpy as np
 
 # our scripts and functions
@@ -57,7 +56,8 @@ def predict_labels(output: nn.ModuleDict) -> dict:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load the model
-model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', 'mtl-models-2022-5-25')
+model_date = 'mtl-models-2022-6-2'
+model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', model_date)
 loaded_model = torch.load(model_path + '/resnet_18_multitask_29.pth')
 
 model = MultiTaskNet(backbone="resnet18", output_size=st.LABELS_PER_TASK, resnet_task=True)
@@ -96,4 +96,4 @@ for images, targets in test_loader:
         print("Processed {}/{}".format(count + 1, ndata))
 
 # store the outputs
-hp.save_pickle(record_outputs, 'results', 'MTL_predictions')
+hp.save_pickle(record_outputs, 'results', 'MTL_predictions_' + model_date)
