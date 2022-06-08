@@ -127,8 +127,6 @@ for images, targets in test_loader:
     record_outputs.append(out)
     record_targets.append(targets)
 
-    print(targets)
-
     # augment count
     count += 1
 
@@ -137,3 +135,4 @@ for images, targets in test_loader:
 
 # store the outputs
 # hp.save_pickle(record_outputs, 'results', 'MTL_predictions_' + model_date)
+hp.save_pickle(record_targets, 'results', 'MTL_predictions_targets_' + model_date)
