@@ -72,8 +72,7 @@ def metrics_multilabel(predictions: str, ground_truth: str, save: bool = False) 
     hl_list = list()
 
     for i in range(len(tags)):
-        ham_loss = hamming_loss(y_true[:, i], y_pred[:, i])
-        hl_list.append(ham_loss)
+        hl_list.append(hamming_loss(y_true[:, i], y_pred[:, i]))
 
     metrics['hamming_loss'] = hl_list
 
