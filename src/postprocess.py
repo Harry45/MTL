@@ -104,7 +104,7 @@ def hamming_per_task(test: pd.DataFrame, pred: pd.DataFrame) -> pd.DataFrame:
     return metrics_task
 
 
-def metrics_multilabel(predictions: str, ground_truth: str, save: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def metric_multilabel(predictions: str, ground_truth: str, save: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Calculates the metrics for the multilabel problem.
 
     Args:
@@ -181,6 +181,7 @@ def metric_multitask(predictions: str, ground_truth: str, save: bool = False) ->
 
     # Hamming loss per task
     metrics_task = hamming_per_task(test, pred_df)
+    print('-' * 50)
 
     # Hamming loss per class
     metrics_class = hamming_per_class(test, y_pred)
