@@ -19,6 +19,36 @@ import settings as st
 import utils.helpers as hp
 
 
+def predict_class(output: torch.Tensor) -> torch.Tensor:
+    """Convert the logits into specific class. Number below 0 is assigned 0 else
+    assigned 1.
+
+    Args:
+        output (torch.Tensor): the output from the neural network
+
+    Returns:
+        torch.Tensor: the outputs in binary format
+    """
+
+    pred = {}
+
+    for i in range(st.NUM_TASKS):
+
+        # predictions for the i^th task (logits)
+        logits = output['task_' + str(i + 1)]
+
+        # modify the output from the neural network
+        logits = logits.cpu().detach().numpy().reshape(-1)
+        logits[logits >= 0] = 1
+        logits[logits < 0] = 0
+        logits = logits.astype(int)
+
+        # record the predictions
+        pred['task_' + str(i + 1)] = logits
+
+    return pred
+
+
 def predict_labels(output: nn.ModuleDict) -> dict:
     """Predict the probability of a specific class. Convert logits to
     probabilities and assign 1 to the label within that specific task.
@@ -69,7 +99,11 @@ model.eval()
 test_dataset = DECaLSDataset(mode='test', augment=False, multi_task=True)
 test_loader = DataLoader(dataset=test_dataset, batch_size=1, shuffle=False)
 
+# this is for recording the predictions (to build the tree)
 record_outputs = list()
+
+# this is for recording the targets (logits to class)
+record_targets = list()
 
 count = 0
 ndata = len(test_dataset)
@@ -83,11 +117,17 @@ for images, targets in test_loader:
     # compute the outputs
     outputs = model(images)
 
-    # convert the logits into binary
+    # convert the logits into binary (this is for the tree structure)
     out = predict_labels(outputs)
+
+    # convert the logits into classes (if positive, class = 1)
+    targets = predict_class(outputs)
 
     # record the results
     record_outputs.append(out)
+    record_targets.append(targets)
+
+    print(targets)
 
     # augment count
     count += 1
@@ -96,4 +136,4 @@ for images, targets in test_loader:
         print("Processed {}/{}".format(count + 1, ndata))
 
 # store the outputs
-hp.save_pickle(record_outputs, 'results', 'MTL_predictions_' + model_date)
+# hp.save_pickle(record_outputs, 'results', 'MTL_predictions_' + model_date)
