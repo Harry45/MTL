@@ -10,7 +10,7 @@
 #SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
-echo Multitask (Weighted Loss)
+echo Multitask Weighted Loss
 
 nvidia-smi
 
