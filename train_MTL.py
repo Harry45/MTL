@@ -60,6 +60,16 @@ def criterion(loss_function, outputs: nn.ModuleDict, labels: dict) -> torch.tens
     return losses
 
 
+def mod_criterion(outputs: nn.ModuleDict, labels: dict) -> torch.tensor:
+    losses = 0
+
+    for _, key in enumerate(outputs):
+        lossfunc = nn.BCEWithLogitsLoss(weight=st.WEIGHTS_MTL[key], reduction='mean')
+        losses += lossfunc(outputs[key], labels[key].float().to(device))
+
+    return losses
+
+
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
 epochs = 30
@@ -76,7 +86,8 @@ for epoch in range(epochs):
         images = images.to(device)
 
         outputs = model(images)
-        loss = criterion(loss_func, outputs, targets)
+        # loss = criterion(loss_func, outputs, targets)
+        loss = mod_criterion(outputs, targets)
         # loss = mtl(images, targets)
 
         optimizer.zero_grad()
@@ -102,7 +113,8 @@ for epoch in range(epochs):
         # images, targets = map(lambda x: x.to(device), [images, targets])
 
         outputs = model(images)
-        loss = criterion(loss_func, outputs, targets)
+        # loss = criterion(loss_func, outputs, targets)
+        loss = mod_criterion(outputs, targets)
         # loss = mtl(images, targets)
 
         losses.append(loss.item())
@@ -113,7 +125,7 @@ for epoch in range(epochs):
     print(f"Validation : Loss={val_loss:.2e}")
     print("-" * 30)
 
-    torch.save(model.state_dict(), model_path + 'resnet_18_multitask_' + str(epoch) + '.pth')
+    # torch.save(model.state_dict(), model_path + 'resnet_18_multitask_' + str(epoch) + '.pth')
 
 # --------------------------------------------------------------
 # class MultiTaskLoss(nn.Module):

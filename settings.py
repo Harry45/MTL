@@ -8,6 +8,7 @@ Description: This file contain the main settings for running the codes.
 # Project: One/Few-Shot Learning for Galaxy Zoo
 
 import numpy as np
+import torch
 from torchvision import transforms
 
 # DECaLS (the data is in Mike's directory on ARC cluster)
@@ -72,6 +73,53 @@ CLASS_WEIGHTS = [0.00282107, 0.00568958, 0.05749345, 0.00643104, 0.00381596,
 #     'Spiral Winding (Medium)', 'Spiral Winding (Loose)', 'Spiral Arms (1)', 'Spiral Arms (2)', 'Spiral Arms (3)',
 #     'Spiral Arms (4)', 'Spiral Arms (More Than 4)', 'Spiral Arms (cannot tell)', 'Merging (None)',
 #     'Merging (Minor Disturbance)', 'Merging (Major Disturbance)', 'Merging (Merger)']
+
+# Smooth                         0.002821
+# Featured or Disk               0.005690
+# Artifact                       0.057493
+# Round                          0.006431
+# In Between                     0.003816
+# Cigar Shaped                   0.011399
+# Edge On Disk(Yes)             0.010705
+# Edge On Disk(No)              0.003131
+# Merging(Merger)               0.024418
+# Merging(Major Disturbance)    0.041934
+# Merging(Minor Disturbance)    0.017971
+# Merging(None)                 0.002253
+# Bulge(Rounded)                0.008159
+# Bulge(Boxy)                   0.057669
+# Bulge(None)                   0.023825
+# No Bar                         0.003642
+# Weak Bar                       0.014607
+# Strong Bar                     0.029243
+# Spiral Arms(Yes)              0.006750
+# Spiral Arms(No)               0.004657
+# Spiral Winding(Tight)         0.010099
+# Spiral Winding(Medium)        0.013962
+# Spiral Winding(Loose)         0.020519
+# Spiral Arms(1)                0.055613
+# Spiral Arms(2)                0.009501
+# Spiral Arms(3)                0.061095
+# Spiral Arms(4)                0.147557
+# Spiral Arms(More Than 4)      0.187171
+# Spiral Arms(cannot tell)      0.015082
+# Central Bulge(None)           0.027930
+# Central Bulge(Small)          0.008518
+# Central Bulge(Moderate)       0.005348
+# Central Bulge(Large)          0.018162
+# Central Bulge(Dominant)       0.082830
+
+WEIGHTS_MTL = {'task_1': torch.tensor([0.002821, 0.005690, 0.057493]),
+               'task_2': torch.tensor([0.006431, 0.003816, 0.011399]),
+               'task_3': torch.tensor([0.010705, 0.003131]),
+               'task_4': torch.tensor([0.024418, 0.041934, 0.017971, 0.002253]),
+               'task_5': torch.tensor([0.008159, 0.057669, 0.023825]),
+               'task_6': torch.tensor([0.003642, 0.014607, 0.029243]),
+               'task_7': torch.tensor([0.006750, 0.004657]),
+               'task_8': torch.tensor([0.010099, 0.013962, 0.020519]),
+               'task_9': torch.tensor([0.055613, 0.009501, 0.061095, 0.147557, 0.187171, 0.015082]),
+               'task_10': torch.tensor([0.027930, 0.008518, 0.005348, 0.018162, 0.082830])
+               }
 
 LABELS = {
 
