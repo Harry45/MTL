@@ -125,7 +125,7 @@ for epoch in range(epochs):
     print(f"Validation : Loss={val_loss:.2e}")
     print("-" * 30)
 
-    # torch.save(model.state_dict(), model_path + 'resnet_18_multitask_' + str(epoch) + '.pth')
+    torch.save(model.state_dict(), model_path + 'resnet_18_multitask_' + str(epoch) + '.pth')
 
 # --------------------------------------------------------------
 # class MultiTaskLoss(nn.Module):
