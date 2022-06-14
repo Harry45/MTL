@@ -17,6 +17,7 @@ nvidia-smi
 module load Anaconda3
 export CONPREFIX=/data/phys-zooniverse/phys2286/pytorch-env39
 source activate $CONPREFIX
+echo $CONPREFIX
 
 which python
 
