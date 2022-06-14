@@ -14,7 +14,6 @@ echo Multitask Weighted Loss
 
 nvidia-smi
 
-module purge
 module load Anaconda3
 export CONPREFIX=/data/phys-zooniverse/phys2286/pytorch-env39
 source activate $CONPREFIX
