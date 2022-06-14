@@ -64,7 +64,7 @@ def mod_criterion(outputs: nn.ModuleDict, labels: dict) -> torch.tensor:
     losses = 0
 
     for _, key in enumerate(outputs):
-        lossfunc = nn.BCEWithLogitsLoss(weight=st.WEIGHTS_MTL[key], reduction='mean')
+        lossfunc = nn.BCEWithLogitsLoss(weight=st.WEIGHTS_MTL[key].to(device), reduction='mean')
         losses += lossfunc(outputs[key], labels[key].float().to(device))
 
     return losses
