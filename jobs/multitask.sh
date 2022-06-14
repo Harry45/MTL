@@ -19,6 +19,8 @@ module load Anaconda3
 export CONPREFIX=$DATA/pytorch-env39
 source activate $CONPREFIX
 
+echo which python
+
 echo Training started.
 date "+%H:%M:%S   %d/%m/%y"
 
