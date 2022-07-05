@@ -86,7 +86,7 @@ def predict_labels(output: nn.ModuleDict) -> dict:
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # load the model
-model_date = 'mtl-models-2022-6-2'
+model_date = 'mtl-models-2022-6-14'
 model_path = os.path.join('/data/phys-zooniverse/phys2286', 'Models', model_date)
 loaded_model = torch.load(model_path + '/resnet_18_multitask_29.pth')
 
@@ -134,5 +134,5 @@ for images, targets in test_loader:
         print("Processed {}/{}".format(count + 1, ndata))
 
 # store the outputs
-# hp.save_pickle(record_outputs, 'results', 'MTL_predictions_' + model_date)
+hp.save_pickle(record_outputs, 'results', 'MTL_predictions_' + model_date)
 hp.save_pickle(record_targets, 'results', 'MTL_predictions_targets_' + model_date)
