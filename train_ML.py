@@ -52,7 +52,8 @@ weights = torch.tensor(st.CLASS_WEIGHTS).to(device)
 
 # loss function
 # criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
-criterion = nn.BCEWithLogitsLoss(weight=weights, reduction='mean')
+# criterion = nn.BCEWithLogitsLoss(weight=weights, reduction='mean')
+criterion = nn.BCEWithLogitsLoss(reduction='mean')
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
