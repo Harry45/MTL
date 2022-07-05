@@ -10,7 +10,7 @@
 #SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
-echo Starting Multilabel (Unweighted)
+echo Starting Multilabel Unweighted
 
 nvidia-smi
 
