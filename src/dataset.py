@@ -8,6 +8,7 @@ Description: Dataloader for the Galaxy Zoo (DECaLS) data.
 # Project: Multi-Task Learning for Galaxy Zoo
 
 import os
+import glob
 from typing import Tuple
 import torch
 from torch.utils.data import Dataset
@@ -17,6 +18,43 @@ from PIL import Image
 # our scripts and functions
 import settings as st
 import utils.helpers as hp
+
+
+class FSdataset(Dataset):
+    """A dataset for the Galaxy Zoo (DECaLS) data with a fixed number of classes
+    for the few shot learning part.
+
+    Args:
+        objtype (str): The type of object to be used for the few shot learning.
+    """
+
+    def __init__(self, objtype: str):
+
+        # record the object type
+        self.objtype = objtype
+
+        # get the transformation to be applied to the data
+        trans = st.TRANS
+
+        # build the transformation
+        self.transform = transforms.Compose(trans)
+
+        # get all the file names for that particular object
+        self.fnames = glob.glob('fewshot/pure/' + self.objtype + '/*')
+
+    def __getitem__(self, index) -> torch.Tensor:
+
+        # load the image
+        image = Image.open(self.fnames[index]).convert("RGB")
+
+        # transform the images
+        if self.transform:
+            image = self.transform(image).float()
+
+        return image
+
+    def __len__(self):
+        return len(self.fnames)
 
 
 class DECaLSDataset(Dataset):

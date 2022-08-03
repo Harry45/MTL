@@ -189,5 +189,6 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
            'merging_major-disturbance_fraction': 'Merging (Major Disturbance)',
            'merging_merger_fraction': 'Merging (Merger)'}
 
-# tasks to do
-# - metrics: take rows where there is only one label per task and calculate the metrics
+# weighted: ml-models-2022-5-25
+# weighted: mtl-models-2022-6-14
+# unweighted: mtl-models-2022-6-2
