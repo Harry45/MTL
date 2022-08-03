@@ -8,6 +8,7 @@ Description: This file is for processing the data to an appropriate format.
 # Project: Multi-Task Learning for Galaxy Zoo
 
 import os
+import random
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -77,7 +78,7 @@ def find_labels(tasks: dict) -> np.ndarray:
 
 
 def select_objects(dataframe: pd.DataFrame, columns: list,
-                   threshold: float = 0.90, save: bool = False) -> dict:
+                   threshold: float = 0.90, nobjects: int = 20, save: bool = False) -> dict:
     """Select objects from the pandas dataframe given a threshold for the
     volunteers' votes
 
@@ -86,6 +87,7 @@ def select_objects(dataframe: pd.DataFrame, columns: list,
         columns (list): a list of the columns, for which the threshold will be
         applied
         threshold (float, optional): the threshold value. Defaults to 0.90.
+        nobjects (int, optional): the number of objects to be selected. Defaults to 20.
         save (bool, optional): Option to save the files. Defaults to False.
 
     Returns:
@@ -97,6 +99,14 @@ def select_objects(dataframe: pd.DataFrame, columns: list,
 
     for col in columns:
         objects[col] = dataframe[dataframe[col] > threshold]
+
+        print(f'{col} has {len(objects[col])} objects')
+
+        assert len(objects[col]) > nobjects, "too many objects selected"
+
+        randint = random.sample(range(0, len(objects[col])), nobjects)
+
+        objects[col] = objects[col].iloc[randint]
 
         # reset pandas index
         objects[col].reset_index(drop=True, inplace=True)
