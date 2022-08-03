@@ -98,8 +98,11 @@ def select_objects(dataframe: pd.DataFrame, columns: list,
     for col in columns:
         objects[col] = dataframe[dataframe[col] > threshold]
 
+        # reset pandas index
+        objects[col].reset_index(drop=True, inplace=True)
+
     if save:
-        hp.save_dict(objects, 'fewshot', 'attributes')
+        hp.save_pickle(objects, 'fewshot', 'attributes')
 
     return objects
 
