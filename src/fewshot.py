@@ -35,7 +35,7 @@ def ml_backbone(modelname: str):
     model = MultiLabelNet(backbone="resnet18")
     model = nn.DataParallel(model, device_ids=[0])
     model.load_state_dict(loaded_model)
-    model.to(device)
+    model.to(DEVICE)
 
     # the backbone
     chopped_layer = nn.Sequential(list(model.children())[0].backbone)
