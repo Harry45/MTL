@@ -11,6 +11,9 @@ import numpy as np
 import torch
 from torchvision import transforms
 
+# device to use
+DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 # DECaLS (the data is in Mike's directory on ARC cluster)
 DECALS = '/data/phys-zooniverse/chri5177/galaxy_zoo/decals/dr5/png'
 

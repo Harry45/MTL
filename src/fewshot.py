@@ -15,8 +15,6 @@ from src.network import MultiLabelNet
 # our scripts and functions
 import settings as st
 
-DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
 
 def ml_backbone(modelname: str):
     """Returns the model (backbone) which outputs the embeddings for the image. This function is for the multilabel case only.
@@ -35,7 +33,7 @@ def ml_backbone(modelname: str):
     model = MultiLabelNet(backbone="resnet18")
     model = nn.DataParallel(model, device_ids=[0])
     model.load_state_dict(loaded_model)
-    model.to(DEVICE)
+    model.to(st.DEVICE)
 
     # the backbone
     chopped_layer = nn.Sequential(list(model.children())[0].backbone)
@@ -54,6 +52,6 @@ def ml_feature_extractor(model: torch.nn.modules, image: torch.Tensor) -> torch.
         torch.Tensor: the feature vector
     """
 
-    features = model(image.to(DEVICE))
+    features = model(image.to(st.DEVICE))
 
     return features
