@@ -43,4 +43,17 @@ def ml_backbone(modelname: str):
     return chopped_layer
 
 
-def ml_feature_extractor(model, image: torch.Tensor) -> torch.Tensor
+def ml_feature_extractor(model: torch.nn.modules, image: torch.Tensor) -> torch.Tensor:
+    """Extract the embeddings from the trained model given an image.
+
+    Args:
+        model (torch.nn.modules): the backbone
+        image (torch.Tensor): the image to be used in the model.
+
+    Returns:
+        torch.Tensor: the feature vector
+    """
+
+    features = model(image.to(DEVICE))
+
+    return features
