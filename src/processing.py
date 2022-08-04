@@ -77,46 +77,6 @@ def find_labels(tasks: dict) -> np.ndarray:
     return record_labels
 
 
-def select_objects(dataframe: pd.DataFrame, columns: list,
-                   threshold: float = 0.90, nobjects: int = 20, save: bool = False) -> dict:
-    """Select objects from the pandas dataframe given a threshold for the
-    volunteers' votes
-
-    Args:
-        dataframe (pd.DataFrame): a dataframe with the volunteers votes
-        columns (list): a list of the columns, for which the threshold will be
-        applied
-        threshold (float, optional): the threshold value. Defaults to 0.90.
-        nobjects (int, optional): the number of objects to be selected. Defaults to 20.
-        save (bool, optional): Option to save the files. Defaults to False.
-
-    Returns:
-        dict: Dictionary of the selected objects
-    """
-    dataframe.rename(st.MAPPING, axis=1, inplace=True)
-
-    objects = dict()
-
-    for col in columns:
-        objects[col] = dataframe[dataframe[col] > threshold]
-
-        print(f'{col} has {len(objects[col])} objects')
-
-        assert len(objects[col]) > nobjects, "too many objects selected"
-
-        randint = random.sample(range(0, len(objects[col])), nobjects)
-
-        objects[col] = objects[col].iloc[randint]
-
-        # reset pandas index
-        objects[col].reset_index(drop=True, inplace=True)
-
-    if save:
-        hp.save_pickle(objects, 'fewshot', 'attributes')
-
-    return objects
-
-
 def generate_labels(dataframe: pd.DataFrame, save: bool = False) -> pd.DataFrame:
     """Process the vote fraction and turn them into labels.
 

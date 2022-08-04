@@ -116,6 +116,11 @@ CLASS_WEIGHTS = [0.00282107, 0.00568958, 0.05749345, 0.00643104, 0.00381596,
 # Central Bulge(Large)          0.018162
 # Central Bulge(Dominant)       0.082830
 
+# Models trained
+# weighted: ml-models-2022-5-25
+# weighted: mtl-models-2022-6-14
+# unweighted: mtl-models-2022-6-2
+
 WEIGHTS_MTL = {'task_1': torch.tensor([0.002821, 0.005690, 0.057493]),
                'task_2': torch.tensor([0.006431, 0.003816, 0.011399]),
                'task_3': torch.tensor([0.010705, 0.003131]),
@@ -196,6 +201,18 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
            'merging_major-disturbance_fraction': 'Merging (Major Disturbance)',
            'merging_merger_fraction': 'Merging (Merger)'}
 
-# weighted: ml-models-2022-5-25
-# weighted: mtl-models-2022-6-14
-# unweighted: mtl-models-2022-6-2
+# ------------------------------------------------------------------------------------------------
+# Few Shot Learning
+# ------------------------------------------------------------------------------------------------
+
+# the columns to work with in the few shot learning dataset
+FS_COLS = ['Artifact', 'Cigar Shaped', 'Merging (Merger)', 'Spiral Arms (Yes)']
+
+# the renamed classes (just for the folders' names)
+FS_CLASSES = ['Artifact', 'Cigar-Shaped', 'Merging-Merger', 'Spiral-Arms-Yes']
+
+# number of ways (classes)
+NWAYS = len(FS_CLASSES)
+
+# number of examples per class in the few shot learning dataset
+NSHOTS = 10
