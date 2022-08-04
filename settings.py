@@ -1,11 +1,11 @@
 """
 Description: This file contain the main settings for running the codes.
-"""
 
-# Author: Arrykrishna Mootoovaloo
-# Date: January 2022
-# Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
-# Project: One/Few-Shot Learning for Galaxy Zoo
+Author: Arrykrishna Mootoovaloo
+Date: January 2022
+Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
+Project: One/Few-Shot Learning for Galaxy Zoo
+"""
 
 import numpy as np
 import torch
@@ -19,6 +19,10 @@ ZENODO = '/data/phys-zooniverse/phys2286/data/zenodo'
 
 # Data from my folder
 DATA_DIR = '/data/phys-zooniverse/phys2286/data'
+
+# Path where the models are stored
+
+MODEL_PATH = '/data/phys-zooniverse/phys2286/Models/'
 
 # ---------------------------------------------------------------------
 # the Deep Learning part
