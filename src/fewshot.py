@@ -77,6 +77,8 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
     if os.path.exists(dirpath) and os.path.isdir(dirpath):
         shutil.rmtree(dirpath)
 
+    os.makedirs(dirpath, exist_ok=True)
+
     # read the dataframe
     dataframe = hp.read_parquet(st.DATA_DIR, 'descriptions/dr5_votes')
 
@@ -108,8 +110,12 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
 
 def copy_query_images(nshot: int, save: bool = False):
 
-    folder = 'fewshot/query'
-    os.makedirs(folder, exist_ok=True)
+    dirpath = 'fewshot/query/'
+
+    if os.path.exists(dirpath) and os.path.isdir(dirpath):
+        shutil.rmtree(dirpath)
+
+    os.makedirs(dirpath, exist_ok=True)
 
     query_dataframe = list()
     subset_dataframe = list()
@@ -141,8 +147,8 @@ def copy_query_images(nshot: int, save: bool = False):
         # get the full paths for the query objects and copy them
         paths = [f'fewshot/images/{objtype}/' + query[i] for i in range(nquery)]
 
-#         for i in range(nquery):
-#             result = subprocess.run(["cp", paths[i], folder], capture_output=True, text=True)
+        for i in range(nquery):
+            result = subprocess.run(["cp", paths[i], dirpath], capture_output=True, text=True)
 
         # store the different dataframes
         query_dataframe.append(df_query)
