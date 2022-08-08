@@ -77,8 +77,12 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
     # read the dataframe
     dataframe = hp.read_parquet(st.DATA_DIR, 'descriptions/dr5_votes')
 
+    # we need to show the network images that it has never seen before (robust analysis)
+    testpoints = hp.load_csv(st.DATA_DIR, 'ml/test')
+    subdata = dataframe[dataframe.iauname.isin(testpoints.iauname)]
+
     # select the objects
-    objects = select_objects(dataframe, st.FS_CLASSES, threshold, nobjects=nobjects, save=True)
+    objects = select_objects(subdata, st.FS_CLASSES, threshold, nobjects=nobjects, save=True)
 
     for col in st.FS_CLASSES:
 
