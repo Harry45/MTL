@@ -20,6 +20,9 @@ import settings as st
 import utils.helpers as hp
 from src.network import MultiLabelNet
 
+import warnings
+warnings.filterwarnings("ignore")
+
 
 def select_objects(dataframe: pd.DataFrame, columns: list,
                    threshold: float = 0.90, nobjects: int = 20, save: bool = False) -> dict:
