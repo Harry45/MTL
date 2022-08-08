@@ -251,13 +251,14 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
     return vectors, vectors_mean
 
 
-def distance_subset_query(modelname: str, nshot: int) -> pd.DataFrame:
+def distance_subset_query(modelname: str, nshot: int, save: bool) -> pd.DataFrame:
     """Calculates the L1 distance (Manhattan or Taxicab) between the query and
     centroid of the subsets.
 
     Args:
         modelname (str): The model to use to create the embedding vector.
         nshot (int): The number of examples in the subset data.
+        save (bool): Whether to save the data or not.
 
     Returns:
         pd.DataFrame: The dataframe consisting of the true labels and the
@@ -286,3 +287,40 @@ def distance_subset_query(modelname: str, nshot: int) -> pd.DataFrame:
     class_subset = torch.cat(class_subset, dim=0)
 
     print(f'The shape of the class_subset is {class_subset.shape}')
+
+    distance_l1 = dict()
+
+    for idx in range(nquery):
+        img = queryloader.dataset[idx].view(1, 1, st.IMG_SIZE[-1], st.IMG_SIZE[-1]).to(st.DEVICE)
+        vec = model(img).data.to('cpu').view(-1)
+
+        # normalise vector
+        vec_norm = F.normalize(vec.view(1, -1))
+
+        # pairwise distance
+        dist = torch.cdist(vec_norm, class_subset, p=1)
+
+        # name of the file
+        name = os.path.split(queryloader.dataset.fnames[idx])[-1]
+        distance_l1[name] = dist.view(-1).data.numpy()
+
+    distance_l1 = pd.DataFrame(distance_l1).T
+
+    # rename the columns
+    distance_l1.columns = st.FS_CLASSES
+
+    # find the column name with the minimum distance
+    labels_pred = distance_l1.idxmin(axis="columns")
+    labels_pred = labels_pred.reset_index(level=0)
+
+    # rename the columns
+    labels_pred.columns = ['Objects', 'Labels']
+
+    # load the true labels and merge them with the predicted labels
+    truth = hp.load_csv('fewshot', 'query')
+    combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
+
+    if save:
+        hp.save_pd_csv(combined, 'fewshot', 'truth_predicted')
+
+    return combined
