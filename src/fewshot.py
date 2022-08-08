@@ -82,9 +82,9 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
     subdata = dataframe[dataframe.iauname.isin(testpoints.iauname)]
 
     # select the objects
-    objects = select_objects(subdata, st.FS_CLASSES, threshold, nobjects=nobjects, save=True)
+    objects = select_objects(subdata, st.FS_COLS, threshold, nobjects=nobjects, save=True)
 
-    for col in st.FS_CLASSES:
+    for col in st.FS_COLS:
 
         # select the common objects
         obj = objects[col]
