@@ -286,7 +286,7 @@ def distance_subset_query(modelname: str, nshot: int, save: bool) -> pd.DataFram
     # convert to a tensor (this is of size 4 x 1000)
     class_subset = torch.cat(class_subset, dim=0)
 
-    print(f'The shape of the class_subset is {class_subset.shape}')
+    print(f'The shape of the subsets embeddings is {class_subset.shape[0]} x {class_subset.shape[1]}')
 
     distance_l1 = dict()
 
