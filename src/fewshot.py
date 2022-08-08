@@ -221,7 +221,7 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
         vectors_mean[col] = vectors[col].mean(dim=0)
 
     # number of shots
-    nshots = (dataloaders[col].dataset)
+    nshots = len(dataloaders[col].dataset)
 
     if save:
         hp.save_pickle(vectors, "fewshot", f"vectors_{str(nshots)}")
