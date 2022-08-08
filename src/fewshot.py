@@ -9,9 +9,11 @@ Project: One/Few-Shot Learning for Galaxy Zoo
 
 import os
 import shutil
+import random
+import subprocess
 import torch
 import torch.nn as nn
-
+import pandas as pd
 
 # our scripts and functions
 import settings as st
@@ -94,14 +96,16 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
 
         for i in range(nobjects):
             path = st.DECALS + '/' + obj.png_loc.iloc[i]
-            result = subprocess.run(["cp", path, folder], capture_output=True, text=True)
+            subprocess.run(["cp", path, folder], capture_output=True, text=True)
 
 
 def ml_backbone(modelname: str):
-    """Returns the model (backbone) which outputs the embeddings for the image. This function is for the multilabel case only.
+    """Returns the model (backbone) which outputs the embeddings for the
+    image.This function is for the multilabel case only.
 
     Args:
-        modelname (str): name of the trained model, for example, ml-models-2022-5-25/resnet_18_multilabel_29.pth
+        modelname (str): name of the trained model, for example,
+        ml-models-2022-5-25/resnet_18_multilabel_29.pth
     """
 
     # full path to the model
@@ -140,7 +144,7 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
     # an empty list to store the mean embedding for each class
     vectors_mean = dict()
 
-   for col in st.FS_CLASSES:
+    for col in st.FS_CLASSES:
 
         # get the dataloader for the current class
         loader = dataloaders[col]
@@ -161,4 +165,4 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
         hp.save_pickle(vectors, "fewshot", "vectors")
         hp.save_pickle(vectors_mean, "fewshot", "vectors_mean")
 
-    return features
+    return vectors, vectors_mean
