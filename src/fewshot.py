@@ -106,6 +106,58 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
             subprocess.run(["cp", path, folder], capture_output=True, text=True)
 
 
+def copy_query_images(nshot: int, save: bool = False):
+
+    folder = 'fewshot/query'
+    os.makedirs(folder, exist_ok=True)
+
+    query_dataframe = list()
+    subset_dataframe = list()
+
+    for objtype in st.FS_CLASSES:
+
+        # list the images in the main folder
+        main = os.listdir(f'fewshot/images/{objtype}/')
+
+        # list the images in the subset folder
+        subset = os.listdir(f'fewshot/{str(nshot)}-subsets/{objtype}/')
+
+        # create the list of query objects
+        query = list(set(main) ^ set(subset))
+
+        # number of objects
+        nquery = len(query)
+        nsubset = len(subset)
+
+        # create dataframes to store the labels
+        df_query = pd.DataFrame()
+        df_query['Objects'] = query
+        df_query['Labels'] = [objtype] * nquery
+
+        df_subset = pd.DataFrame()
+        df_subset['Objects'] = subset
+        df_subset['Labels'] = [objtype] * nsubset
+
+        # get the full paths for the query objects and copy them
+        paths = [f'fewshot/images/{objtype}/' + query[i] for i in range(nquery)]
+
+#         for i in range(nquery):
+#             result = subprocess.run(["cp", paths[i], folder], capture_output=True, text=True)
+
+        # store the different dataframes
+        query_dataframe.append(df_query)
+        subset_dataframe.append(df_subset)
+
+    query_dataframe = pd.concat(query_dataframe)
+    subset_dataframe = pd.concat(subset_dataframe)
+
+    if save:
+        hp.save_pd_csv(query_dataframe, 'fewshot', 'query')
+        hp.save_pd_csv(subset_dataframe, 'fewshot', 'subset')
+
+    return query_dataframe, subset_dataframe
+
+
 def ml_backbone(modelname: str):
     """Returns the model (backbone) which outputs the embeddings for the
     image.This function is for the multilabel case only.
