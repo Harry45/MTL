@@ -25,14 +25,12 @@ class FSdataset(Dataset):
     for the few shot learning part.
 
     Args:
+        subset (bool): If True, the dataset will be Subset, else Query.
         objtype (str): The type of object to be used for the few shot learning.
         nshots (int): The number of shots to be used for the few shot learning.
     """
 
-    def __init__(self, objtype: str, nshot: int):
-
-        # record the object type
-        self.objtype = objtype
+    def __init__(self, subset: bool, objtype: str, nshot: int):
 
         # get the transformation to be applied to the data
         trans = st.TRANS
@@ -40,8 +38,18 @@ class FSdataset(Dataset):
         # build the transformation
         self.transform = transforms.Compose(trans)
 
-        # get all the file names for that particular object
-        self.fnames = glob.glob(f'fewshot/{str(nshot)}-subsets/' + self.objtype + '/*')
+        if subset:
+
+            # record the object type
+            self.objtype = objtype
+
+            # get all the file names for that particular object
+            self.fnames = glob.glob(f'fewshot/{str(nshot)}-subsets/' + self.objtype + '/*')
+
+        else:
+
+            # the files are the query images
+            self.fnames = glob.glob(f'fewshot/query/*')
 
     def __getitem__(self, index) -> torch.Tensor:
 
