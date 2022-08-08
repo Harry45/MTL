@@ -251,13 +251,13 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
     return vectors, vectors_mean
 
 
-def distance_subset_query(modelname: str, nshot: int, save: bool) -> pd.DataFrame:
+def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFrame:
     """Calculates the L1 distance (Manhattan or Taxicab) between the query and
-    centroid of the subsets.
+    centroid of the support sets.
 
     Args:
         modelname (str): The model to use to create the embedding vector.
-        nshot (int): The number of examples in the subset data.
+        nshot (int): The number of examples in the support sets.
         save (bool): Whether to save the data or not.
 
     Returns:
@@ -276,17 +276,17 @@ def distance_subset_query(modelname: str, nshot: int, save: bool) -> pd.DataFram
     queryloader = DataLoader(dataset=querydata, batch_size=1, shuffle=False)
     nquery = len(queryloader.dataset)
 
-    # create an empty list to store the normalised vectors for the subset.
-    class_subset = list()
+    # create an empty list to store the normalised vectors for the support sets.
+    class_support = list()
 
     for key in st.FS_CLASSES:
         v_norm = F.normalize(vectors_mean[key].view(1, -1))
-        class_subset.append(v_norm)
+        class_support.append(v_norm)
 
     # convert to a tensor (this is of size 4 x 1000)
-    class_subset = torch.cat(class_subset, dim=0)
+    class_support = torch.cat(class_support, dim=0)
 
-    print(f'The shape of the subsets embeddings is {class_subset.shape[0]} x {class_subset.shape[1]}')
+    print(f'The shape of the subsets embeddings is {class_support.shape[0]} x {class_support.shape[1]}')
 
     distance_l1 = dict()
 
@@ -298,7 +298,7 @@ def distance_subset_query(modelname: str, nshot: int, save: bool) -> pd.DataFram
         vec_norm = F.normalize(vec.view(1, -1))
 
         # pairwise distance
-        dist = torch.cdist(vec_norm, class_subset, p=1)
+        dist = torch.cdist(vec_norm, class_support, p=1)
 
         # name of the file
         name = os.path.split(queryloader.dataset.fnames[idx])[-1]
