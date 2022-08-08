@@ -320,6 +320,9 @@ def distance_subset_query(modelname: str, nshot: int, save: bool) -> pd.DataFram
     truth = hp.load_csv('fewshot', 'query')
     combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
 
+    # rename the columns for the combined dataframe
+    combined.columns = ['Objects', 'True Labels', 'Predicted Labels']
+
     if save:
         hp.save_pd_csv(combined, 'fewshot', 'truth_predicted')
 
