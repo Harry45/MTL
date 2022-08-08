@@ -26,9 +26,10 @@ class FSdataset(Dataset):
 
     Args:
         objtype (str): The type of object to be used for the few shot learning.
+        nshots (int): The number of shots to be used for the few shot learning.
     """
 
-    def __init__(self, objtype: str):
+    def __init__(self, objtype: str, nshot: int):
 
         # record the object type
         self.objtype = objtype
@@ -40,7 +41,7 @@ class FSdataset(Dataset):
         self.transform = transforms.Compose(trans)
 
         # get all the file names for that particular object
-        self.fnames = glob.glob('fewshot/pure/' + self.objtype + '/*')
+        self.fnames = glob.glob(f'fewshot/{str(nshot)}-subsets/' + self.objtype + '/*')
 
     def __getitem__(self, index) -> torch.Tensor:
 
