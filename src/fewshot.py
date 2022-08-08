@@ -11,14 +11,18 @@ import os
 import shutil
 import random
 import subprocess
+from typing import Tuple
 import torch
 import torch.nn as nn
+from torch.utils.data import DataLoader
 import pandas as pd
 
 # our scripts and functions
 import settings as st
 import utils.helpers as hp
 from src.network import MultiLabelNet
+from src.dataset import FSdataset
+
 
 import warnings
 warnings.filterwarnings("ignore")
@@ -108,7 +112,17 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
             subprocess.run(["cp", path, folder], capture_output=True, text=True)
 
 
-def copy_query_images(nshot: int, save: bool = False):
+def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Copy the query images to the fewshot/query/ directory.
+
+    Args:
+        nshot (int): number of shots we are using. Defaults to 10.
+        save (bool, optional): Option to save the files. Defaults to False.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas dataframes,
+        query and subset.
+    """
 
     dirpath = 'fewshot/query/'
 
@@ -148,7 +162,7 @@ def copy_query_images(nshot: int, save: bool = False):
         paths = [f'fewshot/images/{objtype}/' + query[i] for i in range(nquery)]
 
         for i in range(nquery):
-            result = subprocess.run(["cp", paths[i], dirpath], capture_output=True, text=True)
+            subprocess.run(["cp", paths[i], dirpath], capture_output=True, text=True, check=True)
 
         # store the different dataframes
         query_dataframe.append(df_query)
@@ -234,3 +248,40 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
         hp.save_pickle(vectors_mean, "fewshot", f"vectors_mean_{str(nshots)}")
 
     return vectors, vectors_mean
+
+
+def distance_subset_query(modelname: str, nshot: int) -> pd.DataFrame:
+    """Calculates the L1 distance (Manhattan or Taxicab) between the query and
+    centroid of the subsets.
+
+    Args:
+        modelname (str): The model to use to create the embedding vector.
+        nshot (int): The number of examples in the subset data.
+
+    Returns:
+        pd.DataFrame: The dataframe consisting of the true labels and the
+        predicted labels.
+    """
+
+    # mean vector computed and stored
+    vectors_mean = hp.load_pickle('fewshot', f'vectors_mean_{str(nshot)}')
+
+    # the model loaded
+    model = ml_backbone(modelname)
+
+    # the dataloader for the query set
+    querydata = FSdataset(subset=False)
+    queryloader = DataLoader(dataset=querydata, batch_size=1, shuffle=False)
+    nquery = len(queryloader.dataset)
+
+    # create an empty list to store the normalised vectors for the subset.
+    class_subset = list()
+
+    for key in st.FS_CLASSES:
+        v_norm = F.normalize(vectors_mean[key].view(1, -1))
+        class_subset.append(v_norm)
+
+    # convert to a tensor (this is of size 4 x 1000)
+    class_subset = torch.cat(class_subset, dim=0)
+
+    print(f'The shape of the class_subset is {class_subset.shape}')
