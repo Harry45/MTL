@@ -30,7 +30,7 @@ class FSdataset(Dataset):
         nshots (int): The number of shots to be used for the few shot learning.
     """
 
-    def __init__(self, subset: bool, objtype: str, nshot: int):
+    def __init__(self, subset: bool, **kwargs):
 
         # get the transformation to be applied to the data
         trans = st.TRANS
@@ -41,7 +41,10 @@ class FSdataset(Dataset):
         if subset:
 
             # record the object type
-            self.objtype = objtype
+            self.objtype = kwargs.pop('objtype')
+
+            # number of shots
+            nshot = kwargs.pop('nshot')
 
             # get all the file names for that particular object
             self.fnames = glob.glob(f'fewshot/{str(nshot)}-subsets/' + self.objtype + '/*')
