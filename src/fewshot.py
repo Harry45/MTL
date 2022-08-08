@@ -168,8 +168,11 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
         vectors[col] = torch.vstack(vectors[col])
         vectors_mean[col] = vectors[col].mean(dim=0)
 
+    # number of shots
+    nshots = (dataloaders[col].dataset)
+
     if save:
-        hp.save_pickle(vectors, "fewshot", "vectors")
-        hp.save_pickle(vectors_mean, "fewshot", "vectors_mean")
+        hp.save_pickle(vectors, "fewshot", f"vectors_{str(nshots)}")
+        hp.save_pickle(vectors_mean, "fewshot", f"vectors_mean_{str(nshots)}")
 
     return vectors, vectors_mean
