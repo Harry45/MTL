@@ -272,7 +272,7 @@ def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFra
     model = ml_backbone(modelname)
 
     # the dataloader for the query set
-    querydata = FSdataset(subset=False)
+    querydata = FSdataset(support=False)
     queryloader = DataLoader(dataset=querydata, batch_size=1, shuffle=False)
     nquery = len(queryloader.dataset)
 

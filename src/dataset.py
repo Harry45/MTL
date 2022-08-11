@@ -30,7 +30,7 @@ class FSdataset(Dataset):
         nshots (int): The number of shots to be used for the few shot learning.
     """
 
-    def __init__(self, subset: bool, **kwargs):
+    def __init__(self, support: bool, **kwargs):
 
         # get the transformation to be applied to the data
         trans = st.TRANS
@@ -38,7 +38,7 @@ class FSdataset(Dataset):
         # build the transformation
         self.transform = transforms.Compose(trans)
 
-        if subset:
+        if support:
 
             # record the object type
             self.objtype = kwargs.pop('objtype')
