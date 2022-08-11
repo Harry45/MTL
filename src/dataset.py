@@ -20,6 +20,64 @@ import settings as st
 import utils.helpers as hp
 
 
+class FewShotFineTuneData(Dataset):
+    """A dataset for the Galaxy Zoo (DECaLS) data with a fixed number of classes
+    for the few shot learning part (transductive finetuning).
+
+    Args:
+        subset (bool): If True, the dataset will be Subset, else Query.
+        nshots (int): The number of shots to be used for the few shot learning.
+    """
+
+    def __init__(self, support: bool, nshot: int = 10):
+
+        # support set or query set
+        self.support = support
+
+        # number of shots
+        self.nshot = nshot
+
+        # get the transformation to be applied to the data
+        trans = st.TRANS
+
+        # build the transformation
+        self.transform = transforms.Compose(trans)
+
+        if self.support:
+            fname = f'support_targets_{str(nshot)}'
+
+        else:
+            fname = f'query_targets_{str(nshot)}'
+
+        self.csvfile = hp.load_csv('fewshot', fname)
+
+    def __getitem__(self, index) -> torch.Tensor:
+
+        # choose a row in the csv file
+        row = self.csvfile.iloc[index]
+
+        # the target
+        target = row['Targets']
+
+        if self.support:
+            filepath = f"fewshot/{str(self.nshot)}-shots/{row['Labels']}/{row['Objects']}"
+
+        else:
+            filepath = f"fewshot/query/{row['Objects']}"
+
+        # load the image
+        image = Image.open(filepath).convert("RGB")
+
+        # transform the images
+        if self.transform:
+            image = self.transform(image).float()
+
+        return image, target
+
+    def __len__(self):
+        return len(self.csvfile)
+
+
 class FSdataset(Dataset):
     """A dataset for the Galaxy Zoo (DECaLS) data with a fixed number of classes
     for the few shot learning part.
