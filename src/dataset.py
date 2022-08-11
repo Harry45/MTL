@@ -47,7 +47,7 @@ class FSdataset(Dataset):
             nshot = kwargs.pop('nshot')
 
             # get all the file names for that particular object
-            self.fnames = glob.glob(f'fewshot/{str(nshot)}-subsets/' + self.objtype + '/*')
+            self.fnames = glob.glob(f'fewshot/{str(nshot)}-shots/' + self.objtype + '/*')
 
         else:
 

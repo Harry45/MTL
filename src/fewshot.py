@@ -173,8 +173,8 @@ def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame
     subset_dataframe = pd.concat(subset_dataframe)
 
     if save:
-        hp.save_pd_csv(query_dataframe, 'fewshot', 'query')
-        hp.save_pd_csv(subset_dataframe, 'fewshot', 'subset')
+        hp.save_pd_csv(query_dataframe, 'fewshot', f'query_{str(nshot)}')
+        hp.save_pd_csv(subset_dataframe, 'fewshot', f'support_{str(nshot)}')
 
     return query_dataframe, subset_dataframe
 
