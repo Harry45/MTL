@@ -362,6 +362,6 @@ def generate_labels_fewshot(nshot: int, save: bool) -> pd.DataFrame:
     labels.reset_index(drop=True, inplace=True)
 
     if save:
-        hp.save_pd_csv(labels, 'fewshot', 'supportlabels')
+        hp.save_pd_csv(labels, 'fewshot', f'supportlabels_{str(nshot)}')
 
     return labels
