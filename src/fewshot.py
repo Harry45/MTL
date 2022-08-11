@@ -324,44 +324,33 @@ def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFra
     combined.columns = ['Objects', 'True Labels', 'Predicted Labels']
 
     if save:
-        hp.save_pd_csv(combined, 'fewshot', 'truth_predicted')
+        hp.save_pd_csv(combined, 'fewshot', f'nearest_neighbour_{str(nshot)}')
 
     return combined
 
 
-def generate_labels_fewshot(nshot: int, save: bool) -> pd.DataFrame:
+def generate_labels_fewshot(nshot: int, save: bool) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Generates a csv file with the class labels for the support set.
 
     Args:
         nshot (int): number of examples in the support set
 
     Returns:
-        pd.Dataframe: a dataframe with the [iauname, class, labels].
+        Tuple[pd.DataFrame, pd.DataFrame] : dataframes for the query and support
+       sets with the following columns [Objects, Labels, Targets] in the dataframes.
     """
 
-    record = list()
+    # load the csv files with the object names
+    labels_query = hp.load_csv('fewshot', f'query_{str(nshot)}')
+    labels_support = hp.load_csv('fewshot', f'support_{str(nshot)}')
 
-    for label, cls in enumerate(st.FS_CLASSES):
-
-        # path where the images are stored
-        img_path = f'fewshot/{str(nshot)}-shots/{cls}/'
-        img_names = os.listdir(img_path)
-        cls_names = [cls] * len(img_names)
-
-        # create an empty dataframe with the following column names
-        dataframe = pd.DataFrame(columns=['iauname', 'class', 'label'])
-
-        dataframe['iauname'] = img_names
-        dataframe['class'] = cls_names
-        dataframe['label'] = [label] * len(img_names)
-
-        record.append(dataframe)
-
-    # record all the labels in a dataframe
-    labels = pd.concat(record)
-    labels.reset_index(drop=True, inplace=True)
+    # generate a column consisting of the integer labels for the query and
+    # support sets
+    labels_query['Targets'] = pd.factorize(labels_query['Labels'])[0]
+    labels_support['Targets'] = pd.factorize(labels_support['Labels'])[0]
 
     if save:
-        hp.save_pd_csv(labels, 'fewshot', f'supportlabels_{str(nshot)}')
+        hp.save_pd_csv(labels_query, 'fewshot', f'query_targets_{str(nshot)}')
+        hp.save_pd_csv(labels_support, 'fewshot', f'support_targets_{str(nshot)}')
 
-    return labels
+    return labels_query, labels_support
