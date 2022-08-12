@@ -122,7 +122,7 @@ def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame
 
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas dataframes,
-        query and subset.
+        query and support.
     """
 
     dirpath = 'fewshot/query/'
@@ -133,31 +133,31 @@ def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame
     os.makedirs(dirpath, exist_ok=True)
 
     query_dataframe = list()
-    subset_dataframe = list()
+    support_dataframe = list()
 
     for objtype in st.FS_CLASSES:
 
         # list the images in the main folder
         main = os.listdir(f'fewshot/images/{objtype}/')
 
-        # list the images in the subset folder
-        subset = os.listdir(f'fewshot/{str(nshot)}-subsets/{objtype}/')
+        # list the images in the support folder
+        support = os.listdir(f'fewshot/{str(nshot)}-shots/{objtype}/')
 
         # create the list of query objects
-        query = list(set(main) ^ set(subset))
+        query = list(set(main) ^ set(support))
 
         # number of objects
         nquery = len(query)
-        nsubset = len(subset)
+        nsupport = len(support)
 
         # create dataframes to store the labels
         df_query = pd.DataFrame()
         df_query['Objects'] = query
         df_query['Labels'] = [objtype] * nquery
 
-        df_subset = pd.DataFrame()
-        df_subset['Objects'] = subset
-        df_subset['Labels'] = [objtype] * nsubset
+        df_support = pd.DataFrame()
+        df_support['Objects'] = support
+        df_support['Labels'] = [objtype] * nsupport
 
         # get the full paths for the query objects and copy them
         paths = [f'fewshot/images/{objtype}/' + query[i] for i in range(nquery)]
@@ -167,16 +167,16 @@ def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame
 
         # store the different dataframes
         query_dataframe.append(df_query)
-        subset_dataframe.append(df_subset)
+        support_dataframe.append(df_support)
 
     query_dataframe = pd.concat(query_dataframe)
-    subset_dataframe = pd.concat(subset_dataframe)
+    support_dataframe = pd.concat(support_dataframe)
 
     if save:
         hp.save_pd_csv(query_dataframe, 'fewshot', f'query_{str(nshot)}')
-        hp.save_pd_csv(subset_dataframe, 'fewshot', f'support_{str(nshot)}')
+        hp.save_pd_csv(support_dataframe, 'fewshot', f'support_{str(nshot)}')
 
-    return query_dataframe, subset_dataframe
+    return query_dataframe, support_dataframe
 
 
 def ml_backbone(modelname: str):
@@ -286,7 +286,7 @@ def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFra
     # convert to a tensor (this is of size 4 x 1000)
     class_support = torch.cat(class_support, dim=0)
 
-    print(f'The shape of the subsets embeddings is {class_support.shape[0]} x {class_support.shape[1]}')
+    print(f'The shape of the supports embeddings is {class_support.shape[0]} x {class_support.shape[1]}')
 
     distance_l1 = dict()
 
