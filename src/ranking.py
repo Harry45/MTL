@@ -13,6 +13,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import pandas as pd
+import matplotlib.pylab as plt
 
 # our scripts and functions
 import settings as st
@@ -215,3 +216,46 @@ def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: to
         hp.save_pd_csv(distances, 'results', f'distances_ml_{reference_id}')
 
     return distances
+
+
+def visualise_neighbour(
+        dataframe: pd.DataFrame, loader, nobjects: int, multilabel: bool = False, save: bool = False, **kwargs):
+    """Visualise the nearest neighbours for the given dataframe.
+
+    Args:
+        dataframe (pd.DataFrame): the dataframe to use (contains the shared
+        column for MTL and distance for ML)
+        loader (torch.utils.data.DataLoader): the loader to use
+        nobjects (int): the top number of nearest neighbours to use
+        multilabel (bool, optional): Will use ML if True else MTL will be used. Defaults to False.
+        save (bool, optional): Option to save the figure. Defaults to False.
+    """
+
+    assert nobjects <= dataframe.shape[0], 'Number of objects is too large'
+
+    # we have a different column name for ML and MTL
+    if multilabel:
+        colname = 'distance'
+    else:
+        colname = 'shared'
+
+    # sort the dataframe by the distance column
+    indices = list(dataframe.sort_values(by=[colname]).head(nobjects).index)
+
+    name = 'copper'
+    plt.figure(figsize=(10, 10))
+    for i in range(nobjects):
+        plt.subplot(nobjects // 5, 5, i + 1)
+        plt.imshow(loader.dataset[indices[i]][0].permute(1, 2, 0), cmap=plt.get_cmap(name))
+        plt.axis('off')
+    plt.subplots_adjust(left=None, bottom=None, right=None, top=None, wspace=None, hspace=-0.75)
+
+    if save:
+        os.makedirs('plots', exist_ok=True)
+
+        # get the reference id we have used to calculate the distance
+        ref_id = str(kwargs.pop('ref_id'))
+        plt.savefig(f'plots/neighbours_{ref_id}.pdf', bbox_inches='tight')
+        plt.close()
+    else:
+        plt.show()
