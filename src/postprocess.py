@@ -8,8 +8,8 @@ Description: This file is for calculating the evaluation metrics and other quant
 # Project: Multi-Task Learning for Galaxy Zoo
 
 import os
-import torch
 from typing import Tuple
+import torch
 import numpy as np
 import pandas as pd
 import matplotlib.pylab as plt
@@ -200,7 +200,7 @@ def metric_multitask(predictions: str, ground_truth: str, save: bool = False) ->
 
 def compare_labels_ml(
         dataloader: torch.utils.data.DataLoader, idx: int, pred: pd.DataFrame, savefig: bool = False) -> Tuple[
-        np.ndarray, np.ndarray]:
+            np.ndarray, np.ndarray]:
     """Compare the predicted labels with the ground truth for the multi-label
     learning case.
 
@@ -324,7 +324,7 @@ def build_tree(test_set: pd.DataFrame, pred_set: pd.DataFrame,
     tree_pred = list()
     tree_test = list()
 
-    for idx in range(10):
+    for idx in range(ntest):
 
         # re-write the test point in a dictionary (label per task)
         test_point = labels_to_task(test_set, idx)

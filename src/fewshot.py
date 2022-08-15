@@ -11,6 +11,7 @@ import os
 import shutil
 import random
 import subprocess
+import warnings
 from typing import Tuple
 import torch
 import torch.nn as nn
@@ -25,7 +26,6 @@ from src.network import MultiLabelNet
 from src.dataset import FSdataset
 
 
-import warnings
 warnings.filterwarnings("ignore")
 
 
