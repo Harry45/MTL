@@ -293,11 +293,11 @@ def compare_tree_mtl(dataloader: torch.utils.data.DataLoader, idx: int, pred: pd
     plt.show()
 
     print('Predictions')
-    print('-'*11)
+    print('-' * 11)
     print(labels_pred)
     print()
     print('Volunteers')
-    print('-'*10)
+    print('-' * 10)
     print(labels_test)
 
     return labels_pred, labels_test
