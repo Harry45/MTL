@@ -318,7 +318,7 @@ def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFra
     labels_pred.columns = ['Objects', 'Labels']
 
     # load the true labels and merge them with the predicted labels
-    truth = hp.load_csv('fewshot', 'query')
+    truth = hp.load_csv('fewshot', f'query_{str(nshot)}')
     combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
 
     # rename the columns for the combined dataframe
