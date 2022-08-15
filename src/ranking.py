@@ -136,7 +136,7 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
     rec_distances = list()
 
     # number of images in the dataloader
-    ntest = 10  # len(loader.dataset)
+    ntest = 100  # len(loader.dataset)
 
     for i in range(ntest):
 
@@ -194,7 +194,7 @@ def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: to
     rec_distances = list()
 
     # number of images in the dataloader
-    ntest = 10  # len(loader.dataset)
+    ntest = 100  # len(loader.dataset)
 
     # create an empty list to record the distances
     rec_distances = list()
