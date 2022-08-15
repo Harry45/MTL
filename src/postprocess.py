@@ -253,28 +253,28 @@ def compare_labels_ml(
     return labels_test, labels_pred
 
 
-def labels_per_task(dataframe: pd.DataFrame, index: int = 0) -> dict:
-    """Creates a dictionary where the keys are the tasks and the values are the
-    numeric values (0 or 1).
+# def labels_per_task(dataframe: pd.DataFrame, index: int = 0) -> dict:
+#     """Creates a dictionary where the keys are the tasks and the values are the
+#     numeric values (0 or 1).
 
-    Args:
-        dataframe (pd.DataFrame): a dataframe with the labels.
-        index (int, optional): the row we want to choose from the dataframe. Defaults to 0.
+#     Args:
+#         dataframe (pd.DataFrame): a dataframe with the labels.
+#         index (int, optional): the row we want to choose from the dataframe. Defaults to 0.
 
-    Returns:
-        dict: a dictionary where each task has a list of labels, for example,
-        {'task_1': [0, 1, 0]}
-    """
+#     Returns:
+#         dict: a dictionary where each task has a list of labels, for example,
+#         {'task_1': [0, 1, 0]}
+#     """
 
-    # the first two column names are the name and png locations
-    labels = dataframe.iloc[index, 2:]
+#     # the first two column names are the name and png locations
+#     labels = dataframe.iloc[index, 2:]
 
-    label_dict = dict()
-    for i in range(st.NUM_TASKS):
-        task = labels[st.LABELS['task_' + str(i + 1)]].values.astype(int)
-        label_dict['task_' + str(i + 1)] = task
+#     label_dict = dict()
+#     for i in range(st.NUM_TASKS):
+#         task = labels[st.LABELS['task_' + str(i + 1)]].values.astype(int)
+#         label_dict['task_' + str(i + 1)] = task
 
-    return label_dict
+#     return label_dict
 
 
 def build_tree(test_set: pd.DataFrame, pred_set: pd.DataFrame,
@@ -301,7 +301,7 @@ def build_tree(test_set: pd.DataFrame, pred_set: pd.DataFrame,
     for idx in range(10):
 
         # re-write the test point in a dictionary (label per task)
-        test_point = labels_per_task(test_set, idx)
+        test_point = labels_to_task(test_set, idx)
 
         # find the labels (ground truths and test point)
         pred_labels = sp.find_labels(pred_set[idx])
