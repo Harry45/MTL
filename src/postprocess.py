@@ -253,28 +253,54 @@ def compare_labels_ml(
     return labels_test, labels_pred
 
 
-# def labels_per_task(dataframe: pd.DataFrame, index: int = 0) -> dict:
-#     """Creates a dictionary where the keys are the tasks and the values are the
-#     numeric values (0 or 1).
+def compare_tree_mtl(dataloader: torch.utils.data.DataLoader, idx: int, pred: pd.DataFrame, test: pd.DataFrame,
+                     savefig: bool = False) -> Tuple[np.ndarray, np.ndarray]:
+    """Compare the predicted labels with the ground truth (the tree) for the multitask learning case.
 
-#     Args:
-#         dataframe (pd.DataFrame): a dataframe with the labels.
-#         index (int, optional): the row we want to choose from the dataframe. Defaults to 0.
+    Args:
+        dataloader (torch.utils.data.DataLoader): The dataloader containing the data.
+        idx (int): The index of the image to be compared.
+        pred (pd.DataFrame): The predictions.
+        test (pd.DataFrame): The ground truth.
+        savefig (bool, optional): Option to save the image. Defaults to False.
 
-#     Returns:
-#         dict: a dictionary where each task has a list of labels, for example,
-#         {'task_1': [0, 1, 0]}
-#     """
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: The predicted and ground truth labels.
+    """
 
-#     # the first two column names are the name and png locations
-#     labels = dataframe.iloc[index, 2:]
+    # the filename
+    filename = dataloader.dataset.desc.iauname.iloc[idx]
 
-#     label_dict = dict()
-#     for i in range(st.NUM_TASKS):
-#         task = labels[st.LABELS['task_' + str(i + 1)]].values.astype(int)
-#         label_dict['task_' + str(i + 1)] = task
+    # the data
+    data = dataloader.dataset[idx]
 
-#     return label_dict
+    # the predicted labels
+    labels_pred = pred.iloc[idx]
+    labels_pred = pd.DataFrame(labels_pred[~labels_pred.isna()])
+
+    # the ground truth
+    labels_test = test.iloc[idx]
+    labels_test = pd.DataFrame(labels_test[~labels_test.isna()])
+
+    name = 'copper'
+    plt.figure(figsize=(4, 4))
+    plt.imshow(data[0].permute(1, 2, 0), cmap=plt.get_cmap(name))
+    plt.axis('off')
+
+    if savefig:
+        os.makedirs('plots', exist_ok=True)
+        plt.savefig(f'plots/{filename}.pdf', bbox_inches='tight')
+    plt.show()
+
+    print('Predictions')
+    print('-'*11)
+    print(labels_pred)
+    print()
+    print('Volunteers')
+    print('-'*10)
+    print(labels_test)
+
+    return labels_pred, labels_test
 
 
 def build_tree(test_set: pd.DataFrame, pred_set: pd.DataFrame,
