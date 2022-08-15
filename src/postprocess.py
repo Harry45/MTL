@@ -298,7 +298,7 @@ def build_tree(test_set: pd.DataFrame, pred_set: pd.DataFrame,
     tree_pred = list()
     tree_test = list()
 
-    for idx in range(ntest):
+    for idx in range(10):
 
         # re-write the test point in a dictionary (label per task)
         test_point = labels_per_task(test_set, idx)
