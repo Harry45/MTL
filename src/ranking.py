@@ -17,7 +17,6 @@ import pandas as pd
 # our scripts and functions
 import settings as st
 import utils.helpers as hp
-# from src.fewshot import ml_backbone
 from src.network import MultiLabelNet, MultiTaskNet
 from src.dataset import DECaLSDataset
 
@@ -134,7 +133,7 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
     rec_distances = list()
 
     # number of images in the dataloader
-    ntest = len(loader.dataset)
+    ntest = 10  # len(loader.dataset)
 
     for i in range(ntest):
 
@@ -192,7 +191,7 @@ def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: to
     rec_distances = list()
 
     # number of images in the dataloader
-    ntest = len(loader.dataset)
+    ntest = 10  # len(loader.dataset)
 
     # create an empty list to record the distances
     rec_distances = list()
