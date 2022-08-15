@@ -52,7 +52,7 @@ def plot_pie(percentage: list, index: int = 0, save: bool = False):
     nobject = len(percentage[index].values)
 
     # different choice of colors
-    colors = iter([plt.cm.Pastel1(k) for k in range(nobject)])
+    colors = iter([plt.cm.Pastel1(k) for k in range(nobject)])  # pylint: disable=maybe-no-member
 
     # plot the pie chart
     _, ax1 = plt.subplots(figsize=(12, 12))
