@@ -40,12 +40,14 @@ def mtl_backbone_decoders(modelname: str):
     model = nn.DataParallel(model, device_ids=[0])
     model.load_state_dict(loaded_model)
     model.to(st.DEVICE)
+    model.eval()
 
     # the backbone for multi-task learning
-    backbone = nn.Sequential(*list(model.backbone.children()))
+    whole_model = list(model.children())
+    backbone = nn.Sequential(whole_model[0].backbone)
 
     # the different decoders
-    decoders = model.decoders
+    decoders = whole_model[0].decoders
 
     return backbone, decoders
 

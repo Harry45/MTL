@@ -199,6 +199,7 @@ def ml_backbone(modelname: str):
     model = nn.DataParallel(model, device_ids=[0])
     model.load_state_dict(loaded_model)
     model.to(st.DEVICE)
+    model.eval()
 
     # the backbone
     chopped_layer = nn.Sequential(list(model.children())[0].backbone)
