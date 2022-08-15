@@ -108,7 +108,7 @@ def embeddings_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, data: DECaLSD
 
 
 def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, reference_id: int,
-                           loader: torch.utils.data.DataLoader, p: int = 1, save: bool = False) -> pd.DataFrame:
+                           loader: torch.utils.data.DataLoader, pnorm: int = 1, save: bool = False) -> pd.DataFrame:
     """Calculates the Lp distance distance between the embedding vector for the
     reference image and the images in the loader.
 
@@ -117,7 +117,7 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
         decoders (MultiTaskNet): the decoders of the network
         reference_id (int): the index of the reference image
         loader (torch.utils.data.DataLoader): the loader to use
-        p (int): the p-norm to use
+        pnorm (int): the p-norm to use
         save (bool): whether to save the results or not
 
     Returns:
@@ -146,7 +146,7 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
 
         # calculate the distance between the reference and the current image
         # using the shared embeddings
-        distances['shared'] = torch.cdist(shared_ref, shared, p).item()
+        distances['shared'] = torch.cdist(shared_ref, shared, pnorm).item()
 
         for numtask in range(st.NUM_TASKS):
 
@@ -154,7 +154,7 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
             task = 'task_' + str(numtask + 1)
 
             # task-specific distance
-            distances[task] = torch.cdist(dec_ref[task], tasks[task], p).item()
+            distances[task] = torch.cdist(dec_ref[task], tasks[task], pnorm).item()
 
         rec_distances.append(distances)
 
@@ -162,5 +162,55 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
 
     if save:
         hp.save_pd_csv(distances, 'results', f'distances_mtl_{reference_id}')
+
+    return distances
+
+
+def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: torch.utils.data.DataLoader,
+                          pnorm: int = 1, save: bool = False) -> pd.DataFrame:
+    """Calculates the Lp distance distance between the embedding vector for the
+    reference image and the images in the loader. Applies only to the multilabel
+    network.
+
+    Args:
+        backbone (MultiTaskNet): the backbone of the network
+        reference_id (int): the index of the reference image
+        loader (torch.utils.data.DataLoader): the loader to use
+        pnorm (int): the p-norm to use
+        save (bool): whether to save the results or not
+
+    Returns:
+        pd.DataFrame: a dataframe with all the pairwise distances
+    """
+    # get the reference data from the dataloader
+    data_ref = loader.dataset[reference_id]
+
+    # get the embedding for the reference image
+    embedding_ref = embeddings_ml(backbone, data_ref)
+
+    # create an empty list to store the distances
+    rec_distances = list()
+
+    # number of images in the dataloader
+    ntest = len(loader.dataset)
+
+    # create an empty list to record the distances
+    rec_distances = list()
+
+    for i in range(ntest):
+
+        # extract the embeddings of the using the Deep Learning model
+        embedding = embeddings_ml(backbone, loader.dataset[i])
+
+        # calculate the distance between the reference and the current image
+        # using the shared embeddings
+        distance = torch.cdist(embedding_ref, embedding, pnorm).item()
+
+        rec_distances.append(distance)
+
+    distances = pd.DataFrame(rec_distances, columns=['distance'])
+
+    if save:
+        hp.save_pd_csv(distances, 'results', f'distances_ml_{reference_id}')
 
     return distances
