@@ -51,6 +51,10 @@ class FewShotFineTuneData(Dataset):
 
         self.csvfile = hp.load_csv('fewshot', fname)
 
+        # to remove later
+        if not support:
+            self.csvfile = self.csvfile.iloc[:50]
+
     def __getitem__(self, index) -> torch.Tensor:
 
         # choose a row in the csv file
@@ -72,7 +76,7 @@ class FewShotFineTuneData(Dataset):
         if self.transform:
             image = self.transform(image).float()
 
-        return image, target
+        return image, torch.LongTensor([target])
 
     def __len__(self):
         return len(self.csvfile)

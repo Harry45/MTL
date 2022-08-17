@@ -45,15 +45,15 @@ model = nn.DataParallel(model)
 model.to(device)
 
 # set the optimizer
-optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
+optimizer = torch.optim.Adam(model.parameters(), lr=1E-3, weight_decay=1E-5)
 
 # to assign weights to this loss function
 weights = torch.tensor(st.CLASS_WEIGHTS).to(device)
 
 # loss function
 # criterion = nn.MultiLabelSoftMarginLoss(weight=weights, reduction='mean')
-# criterion = nn.BCEWithLogitsLoss(weight=weights, reduction='mean')
-criterion = nn.BCEWithLogitsLoss(reduction='mean')
+criterion = nn.BCEWithLogitsLoss(weight=weights, reduction='mean')
+# criterion = nn.BCEWithLogitsLoss(reduction='mean')
 
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 

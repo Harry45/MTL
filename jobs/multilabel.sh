@@ -6,11 +6,11 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=32G
 #SBATCH --partition=long
-#SBATCH --cluster=htc
+#SBATCH --clusters=all
 #SBATCH --gres=gpu:v100:4
 #SBATCH --output=jobs/%j.out
 
-echo Starting Multilabel Unweighted
+echo Starting Multilabel Weighted
 
 nvidia-smi
 

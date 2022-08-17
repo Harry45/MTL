@@ -355,3 +355,25 @@ def generate_labels_fewshot(nshot: int, save: bool) -> Tuple[pd.DataFrame, pd.Da
         hp.save_pd_csv(labels_support, 'fewshot', f'support_targets_{str(nshot)}')
 
     return labels_query, labels_support
+
+
+def shanon_entropy(pred_logits: torch.Tensor) -> torch.Tensor:
+    """Calculates the shanon entropy of the predicted logits.
+
+    Args:
+        pred_logits (torch.Tensor): The predicted logits.
+
+    Returns:
+        torch.Tensor: The shanon entropy of the predicted logits.
+    """
+
+    # calculate the probabilities
+    probabilities = F.softmax(pred_logits, dim=1)
+
+    # calculate the log-probabilities
+    log_probabilities = F.log_softmax(pred_logits, dim=1)
+
+    # calculate the loss (regularisation term)
+    loss = - (probabilities * log_probabilities).sum(dim=1).mean()
+
+    return loss
