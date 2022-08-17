@@ -17,6 +17,7 @@ from torch.utils.tensorboard import SummaryWriter
 # our scripts and functions
 from src.network import MultiLabelNet
 from src.dataset import DECaLSDataset
+import utils.helpers as hp
 import settings as st
 
 date = datetime.datetime.now()
@@ -45,6 +46,7 @@ model = nn.DataParallel(model)
 model.to(device)
 
 # set the optimizer
+# optimizer = torch.optim.Adam(model.parameters(), lr=1E-4, weight_decay=1E-5)
 optimizer = torch.optim.Adam(model.parameters(), lr=1E-3, weight_decay=1E-5)
 
 # to assign weights to this loss function
@@ -58,6 +60,9 @@ criterion = nn.BCEWithLogitsLoss(weight=weights, reduction='mean')
 writer = SummaryWriter(os.path.join(out_path, "summary"))
 
 epochs = 30
+
+loss_train = list()
+loss_val = list()
 
 for epoch in range(epochs):
     print("Epoch [{} / {}]".format(epoch + 1, epochs))
@@ -79,6 +84,7 @@ for epoch in range(epochs):
         losses.append(loss.item())
 
     train_loss = sum(losses) / len(losses)
+    loss_train.append(train_loss)
     writer.add_scalar('train_loss', train_loss, epoch)
 
     print(f"Training   : Loss={train_loss:.2e}")
@@ -98,9 +104,13 @@ for epoch in range(epochs):
         losses.append(loss.item())
 
     val_loss = sum(losses) / len(losses)
+    loss_val.append(val_loss)
     writer.add_scalar('val_loss', val_loss, epoch)
 
     print(f"Validation : Loss={val_loss:.2e}")
     print("-" * 30)
 
     torch.save(model.state_dict(), model_path + 'resnet_18_multilabel_' + str(epoch) + '.pth')
+
+hp.save_pickle(loss_train, 'results', f'ml_weighted_train_{today}')
+hp.save_pickle(loss_val, 'results', f'ml_weighted_val_{today}')
