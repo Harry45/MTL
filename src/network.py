@@ -7,6 +7,7 @@ Description: Network for the Galaxy Zoo project.
 # Email: arrykrish@gmail.com/a.mootoovaloo17@imperial.ac.uk/arrykrishna.mootoovaloo@physics.ox.ac.uk
 # Project: Multi-Task Learning for Galaxy Zoo
 
+from copy import deepcopy
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -14,6 +15,62 @@ from torchvision import models
 
 # our scripts and functions
 import settings as st
+
+
+class FineTuneNet(nn.Module):
+    """Network for finetuning according to the few-shot learning.
+
+    Args:
+        backbone (nn.Module): a pre-trained network to be used as the backbone
+        applyrelu (bool): if True, apply relu on the output of the backbone
+        weightmatrix (torch.Tensor): the weight matrix to be used for the linear layer
+    """
+
+    def __init__(self, backbone: nn.Module, applyrelu: bool, weightmatrix: torch.Tensor):
+
+        super().__init__()
+
+        # make a copy of the backbone
+        self.backbone = deepcopy(backbone)
+
+        # set the backbone to evaluation mode
+        self.backbone.eval()
+
+        # number of output features
+        self.numfeatures = list(backbone.modules())[-1].out_features
+
+        self.applyrelu = applyrelu
+
+        # create a head on top (4 because we have 4 classes)
+        self.linear = nn.Linear(self.numfeatures, st.NWAYS, bias=False)
+
+        with torch.no_grad():
+            self.linear.weight.copy_(weightmatrix)
+
+    def forward(self, xtensor: torch.Tensor) -> torch.Tensor:
+        """Forward pass of the network.
+
+        Args:
+            x (torch.Tensor): input tensor
+
+        Returns:
+            torch.Tensor: output from the backbone of size 1 x 1000.
+        """
+
+        # get the embedding vectors
+        xtensor = self.backbone(xtensor)
+
+        # apply relu
+        if self.applyrelu:
+            xtensor = torch.relu(xtensor)
+
+        # normalise the features
+        xtensor = torch.nn.functional.normalize(xtensor)
+
+        # apply the classifier on top now
+        xtensor = self.linear(xtensor)
+
+        return xtensor
 
 
 class MultiLabelNet(nn.Module):

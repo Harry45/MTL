@@ -377,3 +377,59 @@ def shanon_entropy(pred_logits: torch.Tensor) -> torch.Tensor:
     loss = - (probabilities * log_probabilities).sum(dim=1).mean()
 
     return loss
+
+
+def normalise_weights(folder: str, fname: str):
+
+    weightmatrix = hp.load_pickle(folder, fname)
+
+    weights = []
+
+    for item in weightmatrix:
+        weights.append(weightmatrix[item])
+
+    weights = torch.row_stack(weights)
+    weights_norm = torch.nn.functional.normalize(weights, dim=1)
+
+    return weights_norm
+
+
+def training_finetune(model, loaders, quant):
+
+    nsupport = len(loaders['support'].dataset)
+    nquery = len(loaders['query'].dataset)
+    optimizer = torch.optim.Adam(model.parameters(), lr=quant['lr'], weight_decay=quant['weight_decay'])
+
+    for epoch in range(quant['nepochs']):
+
+        model.train()
+
+        losses = []
+        loss_support = torch.zeros(1).to(st.DEVICE)
+        loss_query = torch.zeros(1).to(st.DEVICE)
+
+        for images, targets in loaders['support']:
+            images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
+
+            outputs = model(images)
+
+            loss_support += quant['criterion'](outputs, targets.view(-1))
+
+        for images, targets in loaders['query']:
+            images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
+
+            outputs = model(images)
+
+            loss_query += quant['coefficient'] * shanon_entropy(outputs)
+
+        total_loss = loss_support / nsupport + loss_query / nquery
+
+        optimizer.zero_grad()
+        total_loss.backward()
+        optimizer.step()
+
+        losses.append(total_loss.item())
+
+        print(f"Epoch [{epoch + 1} / {quant['nepochs']}]: Loss = {total_loss.item():.2f}")
+
+    return model
