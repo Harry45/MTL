@@ -12,6 +12,7 @@ import shutil
 import random
 import subprocess
 import warnings
+import datetime
 from typing import Tuple
 import torch
 import torch.nn as nn
@@ -27,6 +28,10 @@ from src.dataset import FSdataset
 
 
 warnings.filterwarnings("ignore")
+
+DATE = datetime.datetime.now()
+TODAY = str(DATE.year) + '-' + str(DATE.month) + '-' + str(DATE.day)
+TIME = str(DATE.hour) + ':' + str(DATE.minute)
 
 
 def select_objects(dataframe: pd.DataFrame, columns: list,
@@ -379,7 +384,16 @@ def shanon_entropy(pred_logits: torch.Tensor) -> torch.Tensor:
     return loss
 
 
-def normalise_weights(folder: str, fname: str):
+def normalise_weights(folder: str, fname: str) -> torch.Tensor:
+    """Given the embedding vectors for the support sets, normalises the vectors
+
+    Args:
+        folder (str): folder where the mean vector is stored
+        fname (str): name of the mean vector file
+
+    Returns:
+        torch.Tensor: The normalised embedding vectors of size Nclass (4) x 1000.
+    """
 
     weightmatrix = hp.load_pickle(folder, fname)
 
@@ -394,12 +408,35 @@ def normalise_weights(folder: str, fname: str):
     return weights_norm
 
 
-def training_finetune(model, loaders, quant):
+def training_finetune(model: nn.Module, loaders: dict, quant: dict) -> nn.Module:
+    """Fine tune the model and adapt it to the few shot learning task.
 
+    Args:
+        model (nn.Module): the pre-trained deep learning model.
+        loaders (dict): a dictionary for the support and query data.
+        quant (dict): a dictionary with important quantities, for example,
+
+        quant = {'lr': 1E-3,
+        'weight_decay': 1E-5,
+        'coefficient': 0.01,
+        'nepochs': 150,
+        'criterion': nn.CrossEntropyLoss()}
+
+        where weight decay is a regularizer, coefficient is a regularization
+        term for the Shanon Entropy calculation and so forth.
+
+    Returns:
+        nn.Module: the fine tuned model.
+    """
+
+    # number of support and query examples
     nsupport = len(loaders['support'].dataset)
     nquery = len(loaders['query'].dataset)
+
+    # choose an optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=quant['lr'], weight_decay=quant['weight_decay'])
 
+    # iterate over the whole dataset
     for epoch in range(quant['nepochs']):
 
         model.train()
@@ -408,6 +445,7 @@ def training_finetune(model, loaders, quant):
         loss_support = torch.zeros(1).to(st.DEVICE)
         loss_query = torch.zeros(1).to(st.DEVICE)
 
+        # calculate loss due to the support set
         for images, targets in loaders['support']:
             images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
 
@@ -415,6 +453,7 @@ def training_finetune(model, loaders, quant):
 
             loss_support += quant['criterion'](outputs, targets.view(-1))
 
+        # calculate loss due to the query set (transductive learning)
         for images, targets in loaders['query']:
             images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
 
@@ -422,6 +461,7 @@ def training_finetune(model, loaders, quant):
 
             loss_query += quant['coefficient'] * shanon_entropy(outputs)
 
+        # calculate the total loss
         total_loss = loss_support / nsupport + loss_query / nquery
 
         optimizer.zero_grad()
@@ -432,4 +472,64 @@ def training_finetune(model, loaders, quant):
 
         print(f"Epoch [{epoch + 1} / {quant['nepochs']}]: Loss = {total_loss.item():.2f}")
 
+    # save the values of the loss
+    hp.save_pickle(losses, 'results', f'finetune_{TODAY}_{TIME}')
+
     return model
+
+
+def finetuning_predictions(model: nn.Module, queryloader: DataLoader, nshot: int, save: bool) -> pd.DataFrame:
+    """_summary_
+
+    Args:
+        model (nn.Module): _description_
+        queryloader (DataLoader): _description_
+        nshot (int): _description_
+        save (bool):
+
+    Returns:
+        pd.DataFrame: _description_
+    """
+
+    # set model to evaluation mode
+    model.eval()
+
+    nquery = len(queryloader.dataset)
+
+    probabilities = {}
+
+    for i in range(nquery):
+
+        # calculate the logits
+        logits = model(queryloader.dataset[i][0].view(1, 1, 224, 224).to(st.DEVICE))
+
+        # calculate the probabilities
+        prob = F.softmax(logits.data.cpu(), dim=1)
+
+        # name of the file
+        name = queryloader.dataset.csvfile['Objects'].values[i]
+        probabilities[name] = prob.view(-1).data.numpy()
+
+    probabilities = pd.DataFrame(probabilities).T
+
+    # rename the columns
+    probabilities.columns = st.FS_CLASSES
+
+    # find the column name with the maximum probability
+    labels_pred = probabilities.idxmax(axis="columns")
+    labels_pred = labels_pred.reset_index(level=0)
+
+    # rename the columns
+    labels_pred.columns = ['Objects', 'Labels']
+
+    # load the true labels and merge them with the predicted labels
+    truth = hp.load_csv('fewshot', f'query_{str(nshot)}')
+    combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
+
+    # rename the columns for the combined dataframe
+    combined.columns = ['Objects', 'True Labels', 'Predicted Labels']
+
+    if save:
+        hp.save_pd_csv(combined, 'fewshot', f'finetune_{str(nshot)}')
+
+    return combined
