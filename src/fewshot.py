@@ -118,6 +118,62 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
             subprocess.run(["cp", path, folder], capture_output=True, text=True)
 
 
+def targets_support_query(nshot: int, save: bool = False):
+    """Here we assume we have selectively chosen the query images to report an
+    accuracy measure.
+
+    Args:
+        nshot (int): number of shots we are using. Defaults to 10.
+        save (bool, optional): Option to save the files. Defaults to False.
+
+    Returns:
+        Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas dataframes,
+        query and support.
+    """
+
+    query_main = os.listdir('fewshot/query/')
+
+    query_dataframe = list()
+    support_dataframe = list()
+
+    for objtype in st.FS_CLASSES:
+
+        # list the images in the main folder
+        main = os.listdir(f'fewshot/images/{objtype}/')
+
+        # list the images in the support folder
+        support = os.listdir(f'fewshot/{str(nshot)}-shots/{objtype}/')
+
+        # get the list of query images
+        query = list(set(main).intersection(query_main))
+
+        # number of objects
+        nquery = len(query)
+        nsupport = len(support)
+
+        # create dataframes to store the labels
+        df_query = pd.DataFrame()
+        df_query['Objects'] = query
+        df_query['Labels'] = [objtype] * nquery
+
+        df_support = pd.DataFrame()
+        df_support['Objects'] = support
+        df_support['Labels'] = [objtype] * nsupport
+
+        # store the different dataframes
+        query_dataframe.append(df_query)
+        support_dataframe.append(df_support)
+
+    query_dataframe = pd.concat(query_dataframe)
+    support_dataframe = pd.concat(support_dataframe)
+
+    if save:
+        hp.save_pd_csv(query_dataframe, 'fewshot', f'query_{str(nshot)}')
+        hp.save_pd_csv(support_dataframe, 'fewshot', f'support_{str(nshot)}')
+
+    return query_dataframe, support_dataframe
+
+
 def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Copy the query images to the fewshot/query/ directory.
 
@@ -406,6 +462,84 @@ def normalise_weights(folder: str, fname: str) -> torch.Tensor:
     weights_norm = torch.nn.functional.normalize(weights, dim=1)
 
     return weights_norm
+
+
+def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) -> nn.Module:
+    """Fine tune the model and adapt it to the few shot learning task.
+
+    Args:
+        model (nn.Module): the pre-trained deep learning model.
+        loaders (dict): a dictionary for the support and query data.
+        quant (dict): a dictionary with important quantities, for example,
+
+        quant = {'lr': 1E-3,
+        'weight_decay': 1E-5,
+        'coefficient': 0.01,
+        'nepochs': 150,
+        'criterion': nn.CrossEntropyLoss()}
+
+        where weight decay is a regularizer, coefficient is a regularization
+        term for the Shanon Entropy calculation and so forth.
+
+        save (bool): if True, the model will be save to the models directory
+
+    Returns:
+        nn.Module: the fine tuned model.
+    """
+
+    # choose an optimizer
+    optimizer = torch.optim.Adam(model.parameters(), lr=quant['lr'], weight_decay=quant['weight_decay'])
+
+    # iterate over the whole dataset
+    for epoch in range(quant['nepochs']):
+
+        model.train()
+
+        losses = []
+        loss_support_rec = []
+        loss_query_rec = []
+
+        # calculate loss due to the support set
+        for images, targets in loaders['support']:
+            images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
+
+            outputs = model(images)
+
+            loss_support = quant['criterion'](outputs, targets.view(-1))
+
+            optimizer.zero_grad()
+            loss_support.backward()
+            optimizer.step()
+
+            loss_support_rec.append(loss_support.item())
+
+        # calculate loss due to the query set (transductive learning)
+        for images, targets in loaders['query']:
+            images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
+
+            outputs = model(images)
+
+            loss_query = quant['coefficient'] * shanon_entropy(outputs)
+
+            optimizer.zero_grad()
+            loss_query.backward()
+            optimizer.step()
+
+            loss_query_rec.append(loss_query.item())
+
+        # calculate the total loss
+        total_loss = sum(loss_support_rec) / len(loss_support_rec) + sum(loss_query_rec) / len(loss_query_rec)
+
+        losses.append(total_loss)
+
+        print(f"Epoch [{epoch + 1} / {quant['nepochs']}]: Loss = {total_loss:.4f}")
+
+    # save the values of the loss
+    if save:
+        hp.save_pickle(losses, 'results', f'finetune_{TODAY}')
+        torch.save(model.state_dict(), st.MODEL_PATH + f'finetune_{TODAY}.pth')
+
+    return model
 
 
 def finetuning_predictions(model: nn.Module, queryloader: DataLoader, nshot: int, save: bool) -> pd.DataFrame:
