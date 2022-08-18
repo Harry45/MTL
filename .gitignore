@@ -5,6 +5,7 @@ __pycache__/
 
 # ours
 models/
+fewshot/
 
 # C extensions
 *.so
