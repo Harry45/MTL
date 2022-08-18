@@ -25,7 +25,7 @@ DATA_DIR = '/data/phys-zooniverse/phys2286/data'
 
 # Path where the models are stored
 
-MODEL_PATH = '/data/phys-zooniverse/phys2286/Models/'
+MODEL_PATH = 'models/'  # '/data/phys-zooniverse/phys2286/Models/'
 
 # ---------------------------------------------------------------------
 # the Deep Learning part
@@ -206,10 +206,11 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
 # ------------------------------------------------------------------------------------------------
 
 # the columns to work with in the few shot learning dataset
-FS_COLS = ['Artifact', 'Cigar Shaped', 'Merging (Merger)', 'Spiral Arms (Yes)']
+FS_COLS = ['Artifact', 'Cigar Shaped', 'Merging (Merger)', 'Spiral Arms (Yes)',
+           'Central Bulge (Dominant)', 'Bulge (Boxy)']
 
 # the renamed classes (just for the folders' names)
-FS_CLASSES = ['Artifact', 'Cigar-Shaped', 'Merging-Merger', 'Spiral-Arms-Yes']
+FS_CLASSES = ['Artifact', 'Cigar-Shaped', 'Merging-Merger', 'Spiral-Arms-Yes', 'Central-Bulge-Dominant', 'Bulge-Boxy']
 
 # number of ways (classes)
 NWAYS = len(FS_CLASSES)
