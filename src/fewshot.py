@@ -536,7 +536,7 @@ def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) 
 
     # save the values of the loss
     if save:
-        hp.save_pickle(losses, 'results', f'finetune_{TODAY}')
+        hp.save_pickle(losses, 'results', f'loss_finetune_{TODAY}')
         torch.save(model.state_dict(), st.MODEL_PATH + f'finetune_{TODAY}.pth')
 
     return model

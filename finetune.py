@@ -41,7 +41,7 @@ model_ft = FineTuneNet(backbone, True, weights_norm)
 model_ft.to(st.DEVICE)
 
 # Training
-quant = {'lr': 1E-4,
+quant = {'lr': 1E-5,
          'weight_decay': 1E-5,
          'coefficient': 0.1,
          'nepochs': 150,
