@@ -226,4 +226,4 @@ NSHOTS = 10
 NUM_CLUSTERS = 10
 
 # Number of objects to apply clustering to
-NOBJECTS_CLUSTERS = 500
+NOBJECTS_CLUSTERS = 1000
