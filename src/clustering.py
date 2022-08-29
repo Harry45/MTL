@@ -105,3 +105,21 @@ def cluster_copy_images(dataframe: pd.DataFrame):
         for j in range(nobjects):
             path = os.path.join(st.DECALS, subset['png_loc'].values[j])
             subprocess.run(["cp", path, dirpath], capture_output=True, text=True)
+
+
+def name_to_id(loader: DataLoader, name: str) -> int:
+    """Get the index ID from the dataframe, given the object's name.
+
+    Args:
+        loader (DataLoader): the dataloader.
+        name (str): name of the object.
+
+    Returns:
+        int: the index in the dataframe.
+    """
+
+    iaunames = loader.dataset.desc['iauname'].values
+    nobjects = len(iaunames)
+    exists = [iaunames[i].startswith(name) for i in range(nobjects)]
+    index = loader.dataset.desc[exists].index.values[0]
+    return index
