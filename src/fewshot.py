@@ -418,14 +418,14 @@ def generate_labels_fewshot(nshot: int, save: bool) -> Tuple[pd.DataFrame, pd.Da
     return labels_query, labels_support
 
 
-def shanon_entropy(pred_logits: torch.Tensor) -> torch.Tensor:
-    """Calculates the shanon entropy of the predicted logits.
+def shannon_entropy(pred_logits: torch.Tensor) -> torch.Tensor:
+    """Calculates the shannon entropy of the predicted logits.
 
     Args:
         pred_logits (torch.Tensor): The predicted logits.
 
     Returns:
-        torch.Tensor: The shanon entropy of the predicted logits.
+        torch.Tensor: The shannon entropy of the predicted logits.
     """
 
     # calculate the probabilities
@@ -479,7 +479,7 @@ def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) 
         'criterion': nn.CrossEntropyLoss()}
 
         where weight decay is a regularizer, coefficient is a regularization
-        term for the Shanon Entropy calculation and so forth.
+        term for the Shannon Entropy calculation and so forth.
 
         save (bool): if True, the model will be save to the models directory
 
@@ -519,7 +519,7 @@ def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) 
 
             outputs = model(images)
 
-            loss_query = quant['coefficient'] * shanon_entropy(outputs)
+            loss_query = quant['coefficient'] * shannon_entropy(outputs)
 
             optimizer.zero_grad()
             loss_query.backward()
