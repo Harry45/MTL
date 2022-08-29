@@ -216,3 +216,14 @@ NWAYS = len(FS_CLASSES)
 
 # number of examples per class in the few shot learning dataset
 NSHOTS = 10
+
+
+# ------------------------------------------------------------------------------------------------
+# Clustering
+# ------------------------------------------------------------------------------------------------
+
+# number of clusters we want to use
+NUM_CLUSTERS = 10
+
+# Number of objects to apply clustering to
+NOBJECTS_CLUSTERS = 500
