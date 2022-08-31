@@ -145,7 +145,7 @@ def targets_support_query(nshot: int, save: bool = False, train: bool = True):
     for objtype in st.FS_CLASSES:
 
         # list the images in the main folder
-        main = os.listdir(f'fewshot/images/{objtype}/')
+        main = os.listdir(f'fewshot/images-original/{objtype}/')
 
         # list the images in the support folder
         support = os.listdir(f'fewshot/{folder}/{str(nshot)}-shots/{objtype}/')
