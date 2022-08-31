@@ -259,7 +259,7 @@ def ml_backbone(modelname: str):
     fullpath = os.path.join(st.MODEL_PATH, modelname)
 
     # load the model
-    loaded_model = torch.load(fullpath)
+    loaded_model = torch.load(fullpath, map_location=st.DEVICE)
 
     # create the model again
     model = MultiLabelNet(backbone="resnet18")
