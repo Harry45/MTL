@@ -7,6 +7,8 @@ __pycache__/
 models/
 clustering/
 fewshot/images/
+fewshot/train/
+fewshot/validate/
 
 # C extensions
 *.so
