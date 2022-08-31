@@ -118,20 +118,26 @@ def copy_image_fewshot(nobjects: int = 50, threshold: float = 0.90):
             subprocess.run(["cp", path, folder], capture_output=True, text=True)
 
 
-def targets_support_query(nshot: int, save: bool = False):
+def targets_support_query(nshot: int, save: bool = False, train: bool = True):
     """Here we assume we have selectively chosen the query images to report an
     accuracy measure.
 
     Args:
         nshot (int): number of shots we are using. Defaults to 10.
         save (bool, optional): Option to save the files. Defaults to False.
+        train (bool, optional): Will choose either train or validate.
 
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame]: A tuple of two pandas dataframes,
         query and support.
     """
 
-    query_main = os.listdir('fewshot/query/')
+    if train:
+        folder = 'train'
+    else:
+        folder = 'validate'
+
+    query_main = os.listdir(f'fewshot/{folder}/query/')
 
     query_dataframe = list()
     support_dataframe = list()
@@ -142,7 +148,7 @@ def targets_support_query(nshot: int, save: bool = False):
         main = os.listdir(f'fewshot/images/{objtype}/')
 
         # list the images in the support folder
-        support = os.listdir(f'fewshot/{str(nshot)}-shots/{objtype}/')
+        support = os.listdir(f'fewshot/{folder}/{str(nshot)}-shots/{objtype}/')
 
         # get the list of query images
         query = list(set(main).intersection(query_main))
@@ -168,13 +174,13 @@ def targets_support_query(nshot: int, save: bool = False):
     support_dataframe = pd.concat(support_dataframe)
 
     if save:
-        hp.save_pd_csv(query_dataframe, 'fewshot', f'query_{str(nshot)}')
-        hp.save_pd_csv(support_dataframe, 'fewshot', f'support_{str(nshot)}')
+        hp.save_pd_csv(query_dataframe, 'fewshot', f'{folder}/query_{str(nshot)}')
+        hp.save_pd_csv(support_dataframe, 'fewshot', f'{folder}/support_{str(nshot)}')
 
     return query_dataframe, support_dataframe
 
 
-def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def copy_query_images(nshot: int = 10, save: bool = False, train: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Copy the query images to the fewshot/query/ directory.
 
     Args:
@@ -268,17 +274,21 @@ def ml_backbone(modelname: str):
     return chopped_layer
 
 
-def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool) -> torch.Tensor:
+def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool, train: bool = True) -> torch.Tensor:
     """Extract the embeddings from the trained model given an image.
 
     Args:
         model (torch.nn.modules): the backbone.
         dataloaders (dict): the dataloaders for the support set.
         save (bool): whether to save the embeddings or not.
-
+        train (bool): if True, the data from the training set will be used.
     Returns:
         torch.Tensor: the feature vector
     """
+    if train:
+        folder = 'train'
+    else:
+        folder = 'validate'
 
     # create an empty dictionary to store the features
     vectors = dict()
@@ -307,13 +317,13 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool)
     nshots = len(dataloaders[col].dataset)
 
     if save:
-        hp.save_pickle(vectors, "fewshot", f"vectors_{str(nshots)}")
-        hp.save_pickle(vectors_mean, "fewshot", f"vectors_mean_{str(nshots)}")
+        hp.save_pickle(vectors, "fewshot", f"{folder}/vectors_{str(nshots)}")
+        hp.save_pickle(vectors_mean, "fewshot", f"{folder}/vectors_mean_{str(nshots)}")
 
     return vectors, vectors_mean
 
 
-def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFrame:
+def distance_support_query(modelname: str, nshot: int, save: bool, train: bool = False) -> pd.DataFrame:
     """Calculates the L1 distance (Manhattan or Taxicab) between the query and
     centroid of the support sets.
 
@@ -321,20 +331,27 @@ def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFra
         modelname (str): The model to use to create the embedding vector.
         nshot (int): The number of examples in the support sets.
         save (bool): Whether to save the data or not.
+        train (bool): If we want to use the query set from the training set or
+        validate set.
 
     Returns:
         pd.DataFrame: The dataframe consisting of the true labels and the
         predicted labels.
     """
 
+    if train:
+        folder = 'train'
+    else:
+        folder = 'validate'
+
     # mean vector computed and stored
-    vectors_mean = hp.load_pickle('fewshot', f'vectors_mean_{str(nshot)}')
+    vectors_mean = hp.load_pickle('fewshot', f'{folder}/vectors_mean_{str(nshot)}')
 
     # the model loaded
     model = ml_backbone(modelname)
 
     # the dataloader for the query set
-    querydata = FSdataset(support=False)
+    querydata = FSdataset(support=False, train=train)
     queryloader = DataLoader(dataset=querydata, batch_size=1, shuffle=False)
     nquery = len(queryloader.dataset)
 
@@ -379,32 +396,39 @@ def distance_support_query(modelname: str, nshot: int, save: bool) -> pd.DataFra
     labels_pred.columns = ['Objects', 'Labels']
 
     # load the true labels and merge them with the predicted labels
-    truth = hp.load_csv('fewshot', f'query_{str(nshot)}')
+    truth = hp.load_csv('fewshot', f'{folder}/query_{str(nshot)}')
     combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
 
     # rename the columns for the combined dataframe
     combined.columns = ['Objects', 'True Labels', 'Predicted Labels']
 
     if save:
-        hp.save_pd_csv(combined, 'fewshot', f'nearest_neighbour_{str(nshot)}')
+        hp.save_pd_csv(combined, 'fewshot', f'{folder}/nearest_neighbour_{str(nshot)}')
 
     return combined
 
 
-def generate_labels_fewshot(nshot: int, save: bool) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """Generates a csv file with the class labels for the support set.
+def generate_labels_fewshot(nshot: int, save: bool, train: bool) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Generates a csv file with the class labels for the support and query set.
 
     Args:
-        nshot (int): number of examples in the support set
+        nshot (int): number of examples in the support set.
+        save (bool): if True, the files will be saved.
+        train (bool): if True, the training set will be generated.
 
     Returns:
         Tuple[pd.DataFrame, pd.DataFrame] : dataframes for the query and support
        sets with the following columns [Objects, Labels, Targets] in the dataframes.
     """
 
+    if train:
+        folder = 'train'
+    else:
+        folder = 'validate'
+
     # load the csv files with the object names
-    labels_query = hp.load_csv('fewshot', f'query_{str(nshot)}')
-    labels_support = hp.load_csv('fewshot', f'support_{str(nshot)}')
+    labels_query = hp.load_csv('fewshot', f'{folder}/query_{str(nshot)}')
+    labels_support = hp.load_csv('fewshot', f'{folder}/support_{str(nshot)}')
 
     # generate a column consisting of the integer labels for the query and
     # support sets
@@ -412,8 +436,8 @@ def generate_labels_fewshot(nshot: int, save: bool) -> Tuple[pd.DataFrame, pd.Da
     labels_support['Targets'] = pd.factorize(labels_support['Labels'])[0]
 
     if save:
-        hp.save_pd_csv(labels_query, 'fewshot', f'query_targets_{str(nshot)}')
-        hp.save_pd_csv(labels_support, 'fewshot', f'support_targets_{str(nshot)}')
+        hp.save_pd_csv(labels_query, 'fewshot', f'{folder}/query_targets_{str(nshot)}')
+        hp.save_pd_csv(labels_support, 'fewshot', f'{folder}/support_targets_{str(nshot)}')
 
     return labels_query, labels_support
 

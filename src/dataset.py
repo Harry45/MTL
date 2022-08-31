@@ -27,15 +27,24 @@ class FewShotFineTuneData(Dataset):
     Args:
         subset (bool): If True, the dataset will be Subset, else Query.
         nshots (int): The number of shots to be used for the few shot learning.
+        train (bool): if we want to use the training set.
     """
 
-    def __init__(self, support: bool, nshot: int = 10):
+    def __init__(self, support: bool, nshot: int = 10, train=True):
 
         # support set or query set
         self.support = support
 
         # number of shots
         self.nshot = nshot
+
+        # if we want to use the training set
+        self.train = train
+
+        if self.train:
+            self.folder = 'train'
+        else:
+            self.folder = 'validate'
 
         # get the transformation to be applied to the data
         trans = st.TRANS
@@ -44,10 +53,10 @@ class FewShotFineTuneData(Dataset):
         self.transform = transforms.Compose(trans)
 
         if self.support:
-            fname = f'support_targets_{str(nshot)}'
+            fname = f'{self.folder}/support_targets_{str(nshot)}'
 
         else:
-            fname = f'query_targets_{str(nshot)}'
+            fname = f'{self.folder}/query_targets_{str(nshot)}'
 
         self.csvfile = hp.load_csv('fewshot', fname)
 
@@ -64,10 +73,10 @@ class FewShotFineTuneData(Dataset):
         target = row['Targets']
 
         if self.support:
-            filepath = f"fewshot/{str(self.nshot)}-shots/{row['Labels']}/{row['Objects']}"
+            filepath = f"fewshot/{self.folder}/{str(self.nshot)}-shots/{row['Labels']}/{row['Objects']}"
 
         else:
-            filepath = f"fewshot/query/{row['Objects']}"
+            filepath = f"fewshot/{self.folder}/query/{row['Objects']}"
 
         # load the image
         image = Image.open(filepath).convert("RGB")
@@ -92,7 +101,15 @@ class FSdataset(Dataset):
         nshots (int): The number of shots to be used for the few shot learning.
     """
 
-    def __init__(self, support: bool, **kwargs):
+    def __init__(self, support: bool, train=True, **kwargs):
+
+        # if we want to use the training set
+        self.train = train
+
+        if self.train:
+            self.folder = 'train'
+        else:
+            self.folder = 'validate'
 
         # get the transformation to be applied to the data
         trans = st.TRANS
@@ -109,12 +126,12 @@ class FSdataset(Dataset):
             nshot = kwargs.pop('nshot')
 
             # get all the file names for that particular object
-            self.fnames = glob.glob(f'fewshot/{str(nshot)}-shots/' + self.objtype + '/*')
+            self.fnames = glob.glob(f'fewshot/{self.folder}/{str(nshot)}-shots/' + self.objtype + '/*')
 
         else:
 
             # the files are the query images
-            self.fnames = glob.glob(f'fewshot/query/*')
+            self.fnames = glob.glob(f'fewshot/{self.folder}/query/*')
 
     def __getitem__(self, index) -> torch.Tensor:
 
