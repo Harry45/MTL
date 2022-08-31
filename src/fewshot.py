@@ -371,6 +371,7 @@ def distance_support_query(modelname: str, nshot: int, save: bool, train: bool =
 
     for idx in range(nquery):
         img = queryloader.dataset[idx].view(1, 1, st.IMG_SIZE[-1], st.IMG_SIZE[-1]).to(st.DEVICE)
+        print(img)
         vec = model(img).data.to('cpu').view(-1)
 
         # normalise vector
