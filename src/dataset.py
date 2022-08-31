@@ -133,8 +133,6 @@ class FSdataset(Dataset):
             # the files are the query images
             self.fnames = glob.glob(f'fewshot/{self.folder}/query/*')
 
-        print(self.fnames)
-
     def __getitem__(self, index) -> torch.Tensor:
 
         # load the image
