@@ -180,7 +180,7 @@ def targets_support_query(nshot: int, save: bool = False, train: bool = True):
     return query_dataframe, support_dataframe
 
 
-def copy_query_images(nshot: int = 10, save: bool = False, train: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
+def copy_query_images(nshot: int = 10, save: bool = False) -> Tuple[pd.DataFrame, pd.DataFrame]:
     """Copy the query images to the fewshot/query/ directory.
 
     Args:
@@ -488,12 +488,72 @@ def normalise_weights(folder: str, fname: str) -> torch.Tensor:
     return weights_norm
 
 
-def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) -> nn.Module:
+def calculate_validation_loss(model: nn.Module, loaders_validate: dict, quant: dict) -> dict:
+    """Calculates the validation losses
+
+    Args:
+        model (nn.Module): the network.
+        loaders_validate (dict): the dataloaders for the support and query set.
+        quant (dict): a dictionary with important quantities, for example,
+
+        quant = {'lr': 1E-3,
+        'weight_decay': 1E-5,
+        'coefficient': 0.01,
+        'nepochs': 150,
+        'criterion': nn.CrossEntropyLoss()}
+
+        where weight decay is a regularizer, coefficient is a regularization
+        term for the Shannon Entropy calculation and so forth.
+
+    Returns:
+        dict: a dictionary with the support, query and total losses.
+    """
+
+    model.eval()
+
+    loss_support_rec = []
+    loss_query_rec = []
+
+    # calculate loss due to the support set
+    for images, targets in loaders_validate['support']:
+        images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
+
+        outputs = model(images)
+
+        loss_support = quant['criterion'](outputs, targets.view(-1))
+
+        loss_support_rec.append(loss_support.item())
+
+    # calculate loss due to the query set (transductive learning)
+    for images, targets in loaders_validate['query']:
+
+        images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
+
+        outputs = model(images)
+
+        loss_query = quant['coefficient'] * shannon_entropy(outputs)
+
+        loss_query_rec.append(loss_query.item())
+
+    # calculate the total loss (training set)
+    total_loss = sum(loss_support_rec) / len(loss_support_rec) + sum(loss_query_rec) / len(loss_query_rec)
+
+    # create a dictionary to store the different losses
+    validate_losses = {'support': loss_support_rec, 'query': loss_query_rec, 'total_validate_loss': total_loss}
+
+    return validate_losses
+
+
+def training_finetune(
+        model: nn.Module, loaders_training: dict, loaders_validate: dict, quant: dict, save: bool) -> nn.Module:
     """Fine tune the model and adapt it to the few shot learning task.
 
     Args:
         model (nn.Module): the pre-trained deep learning model.
-        loaders (dict): a dictionary for the support and query data.
+        loaders_training (dict): a dictionary for the support and query data
+        (training set).
+        loaders_validate (dict): a dictionary for the support and query data
+        (validation set)).
         quant (dict): a dictionary with important quantities, for example,
 
         quant = {'lr': 1E-3,
@@ -514,17 +574,19 @@ def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) 
     # choose an optimizer
     optimizer = torch.optim.Adam(model.parameters(), lr=quant['lr'], weight_decay=quant['weight_decay'])
 
+    losses_train = []
+    losses_valid = []
+
     # iterate over the whole dataset
     for epoch in range(quant['nepochs']):
 
         model.train()
 
-        losses = []
         loss_support_rec = []
         loss_query_rec = []
 
         # calculate loss due to the support set
-        for images, targets in loaders['support']:
+        for images, targets in loaders_training['support']:
             images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
 
             outputs = model(images)
@@ -538,7 +600,7 @@ def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) 
             loss_support_rec.append(loss_support.item())
 
         # calculate loss due to the query set (transductive learning)
-        for images, targets in loaders['query']:
+        for images, targets in loaders_training['query']:
             images, targets = map(lambda x: x.to(st.DEVICE), [images, targets])
 
             outputs = model(images)
@@ -551,33 +613,47 @@ def training_finetune(model: nn.Module, loaders: dict, quant: dict, save: bool) 
 
             loss_query_rec.append(loss_query.item())
 
-        # calculate the total loss
+        # calculate the total loss (training set)
         total_loss = sum(loss_support_rec) / len(loss_support_rec) + sum(loss_query_rec) / len(loss_query_rec)
+        losses_train.append(total_loss)
+        print(f"Epoch [{epoch + 1} / {quant['nepochs']}]: Training Loss = {total_loss:.4f}")
 
-        losses.append(total_loss)
-
-        print(f"Epoch [{epoch + 1} / {quant['nepochs']}]: Loss = {total_loss:.4f}")
+        # calculate the loss (validation set)
+        losses_validation = calculate_validation_loss(model, loaders_validate, quant)
+        loss_val_total = losses_validation['total_validate_loss']
+        losses_valid.append(loss_val_total)
+        print(f"Epoch [{epoch + 1} / {quant['nepochs']}]: Validation Loss = {loss_val_total:.4f}")
+        print('-' * 50)
 
     # save the values of the loss
     if save:
-        hp.save_pickle(losses, 'results', f'loss_finetune_{TODAY}')
-        torch.save(model.state_dict(), st.MODEL_PATH + f'finetune_{TODAY}.pth')
+        nepochs = str(quant['nepochs'])
+        hp.save_pickle(losses_train, 'results', f'loss_finetune_train_{TODAY}_{nepochs}')
+        hp.save_pickle(losses_valid, 'results', f'loss_finetune_valid_{TODAY}_{nepochs}')
+        torch.save(model.state_dict(), st.MODEL_PATH + f'finetune_{TODAY}_{nepochs}.pth')
 
     return model
 
 
-def finetuning_predictions(model: nn.Module, queryloader: DataLoader, nshot: int, save: bool) -> pd.DataFrame:
-    """_summary_
+def finetuning_predictions(model: nn.Module, queryloader: DataLoader, nshot: int, nepochs: int, save: bool,
+                           train: bool = True) -> pd.DataFrame:
+    """Generates the predictions given the fine-tuned model.
 
     Args:
-        model (nn.Module): _description_
-        queryloader (DataLoader): _description_
-        nshot (int): _description_
-        save (bool):
+        model (nn.Module): the deep learning model.
+        queryloader (DataLoader): the dataloader to be used for predictions.
+        nshot (int): number of shots to use.
+        nepochs (int): number of epochs used in the pre-training (for filename).
+        save (bool): option to save the outputs.
+        train (bool): if to use the training set or validation set.
 
     Returns:
-        pd.DataFrame: _description_
+        pd.DataFrame: a dataframe with the predictions.
     """
+    if train:
+        folder = 'train'
+    else:
+        folder = 'validate'
 
     # set model to evaluation mode
     model.eval()
@@ -611,13 +687,13 @@ def finetuning_predictions(model: nn.Module, queryloader: DataLoader, nshot: int
     labels_pred.columns = ['Objects', 'Labels']
 
     # load the true labels and merge them with the predicted labels
-    truth = hp.load_csv('fewshot', f'query_{str(nshot)}')
+    truth = hp.load_csv('fewshot', f'{folder}/query_{str(nshot)}')
     combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
 
     # rename the columns for the combined dataframe
     combined.columns = ['Objects', 'True Labels', 'Predicted Labels']
 
     if save:
-        hp.save_pd_csv(combined, 'fewshot', f'finetune_{str(nshot)}')
+        hp.save_pd_csv(combined, 'fewshot', f'finetune_{folder}_{str(nshot)}_{str(nepochs)}')
 
     return combined
