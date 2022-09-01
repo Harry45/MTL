@@ -195,9 +195,9 @@ def generate_vectors_ml(backbone: MultiLabelNet, dataloader: DataLoader,
     for index in range(nimages):
         datum = dataloader.dataset[index]
         vector = embeddings_ml(backbone, datum)
-        record.append(vector)
+        record.append(vector.to('cpu').data)
 
-    record = torch.vstack(record).to('cpu').data
+    record = torch.vstack(record)
 
     if save:
         hp.save_pickle(record, 'results', 'embedding_vectors_ml')
