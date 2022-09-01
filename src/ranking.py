@@ -180,6 +180,7 @@ def generate_vectors_ml(backbone: MultiLabelNet, dataloader: DataLoader, save: b
     record = {}
 
     for index in range(nimages):
+        print(index)
         datum = dataloader.dataset[index]
         record[descriptions['iauname'].values[index]] = embeddings_ml(backbone, datum)
 
