@@ -64,6 +64,7 @@ def embeddings_ml(backbone: MultiLabelNet, data: DECaLSDataset) -> torch.Tensor:
     Returns:
         torch.Tensor: the normalized embeddings for the shared backbone
     """
+    backbone.eval()
 
     # 0 because first is the image and 1 is the label
     embeddings = backbone(data[0].view(1, 1, st.IMG_SIZE[1], st.IMG_SIZE[1]).to(st.DEVICE))
