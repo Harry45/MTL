@@ -172,11 +172,18 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
 def generate_vectors_ml(backbone: MultiLabelNet, dataloader: DataLoader, save: bool) -> torch.Tensor:
 
     # number of images in the dataloader
-    nimages = len(dataloader.dataset)
+    nimages = 10  # len(dataloader.dataset)
+
+    # the descriptions we want to keep (filename and file path)
+    descriptions = dataloader.dataset.desc[['iauname', 'png_loc']]
+
+    record = {}
 
     for index in range(nimages):
         datum = dataloader.dataset[index]
-        embeddings = embeddings_ml(backbone, datum)
+        record[descriptions['iauname'].values[index]] = embeddings_ml(backbone, datum)
+
+    return record
 
 
 def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: torch.utils.data.DataLoader,
