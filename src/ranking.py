@@ -169,22 +169,41 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
     return distances
 
 
-def generate_vectors_ml(backbone: MultiLabelNet, dataloader: DataLoader, save: bool) -> torch.Tensor:
+def generate_vectors_ml(backbone: MultiLabelNet, dataloader: DataLoader,
+                        save: bool) -> Tuple[pd.DataFrame, torch.Tensor]:
+    """Generate and store the embedding vectors computed using the Multilabel
+
+    Args:
+        backbone (MultiLabelNet): the multilabel backbone
+        dataloader (DataLoader): the dataloader for which we want to compute the
+        embedding vectors.
+        save (bool): option to save the results
+
+    Returns:
+        Tuple[pd.DataFrame, torch.Tensor]: a dataframe with the images'
+        descriptions and a tensor of shape N x 1000 for the N images.
+    """
 
     # number of images in the dataloader
-    nimages = 10  # len(dataloader.dataset)
+    nimages = len(dataloader.dataset)
 
     # the descriptions we want to keep (filename and file path)
     descriptions = dataloader.dataset.desc[['iauname', 'png_loc']]
 
-    record = {}
+    record = list()
 
     for index in range(nimages):
-        print(index)
         datum = dataloader.dataset[index]
-        record[descriptions['iauname'].values[index]] = embeddings_ml(backbone, datum)
+        vector = embeddings_ml(backbone, datum)
+        record.append(vector)
 
-    return record
+    record = torch.vstack(record).to('cpu').data
+
+    if save:
+        hp.save_pickle(record, 'results', 'embedding_vectors_ml')
+        hp.save_pickle(descriptions, 'results', 'embedding_vectors_ml_descriptions')
+
+    return descriptions, record
 
 
 def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: torch.utils.data.DataLoader,
