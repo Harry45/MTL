@@ -10,7 +10,7 @@ fewshot/images/
 fewshot/images-original/
 fewshot/train/
 fewshot/validate/
-results/embedding_vectors_ml.pkl
+results/embedding_vectors_ml_1.pkl
 
 # C extensions
 *.so
