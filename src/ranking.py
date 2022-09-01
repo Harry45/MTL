@@ -12,6 +12,7 @@ from typing import Tuple
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.utils.data import DataLoader
 import pandas as pd
 import matplotlib.pylab as plt
 
@@ -166,6 +167,16 @@ def calculate_distance_mtl(backbone: MultiTaskNet, decoders: MultiTaskNet, refer
         hp.save_pd_csv(distances, 'results', f'distances_mtl_{reference_id}')
 
     return distances
+
+
+def generate_vectors_ml(backbone: MultiLabelNet, dataloader: DataLoader, save: bool) -> torch.Tensor:
+
+    # number of images in the dataloader
+    nimages = len(dataloader.dataset)
+
+    for index in range(nimages):
+        datum = dataloader.dataset[index]
+        embeddings = embeddings_ml(backbone, datum)
 
 
 def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: torch.utils.data.DataLoader,

@@ -24,7 +24,6 @@ ZENODO = '/data/phys-zooniverse/phys2286/data/zenodo'
 DATA_DIR = '/data/phys-zooniverse/phys2286/data'
 
 # Path where the models are stored
-
 MODEL_PATH = 'models/'  # '/data/phys-zooniverse/phys2286/Models/'
 
 # ---------------------------------------------------------------------
