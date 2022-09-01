@@ -207,6 +207,28 @@ def generate_vectors_ml(backbone: MultiLabelNet, dataloader: DataLoader,
     return descriptions, record
 
 
+def calculate_distance(vectors: torch.Tensor, dataframe: pd.DataFrame, index: int, pnorm: int) -> pd.DataFrame:
+    """Calculate the pairwise distance given the reference index in the test
+    data set.
+
+    Args:
+        vectors (torch.Tensor): the normalised vectors from the multilabel network
+        dataframe (pd.DataFrame): a dataframe with the iauname and png_loc
+        index (int): the reference image's index
+        pnorm (int): the p-norm to use for distance calculation
+
+    Returns:
+        pd.DataFrame: a dataframe with columns: iauname, png_loc, distance
+    """
+
+    vector_ref = vectors[index].view(1, -1)
+    distances = torch.cdist(vector_ref, vectors, pnorm).t()
+    distances = pd.DataFrame(distances.numpy(), columns=['distance'])
+    df_combined = pd.concat([dataframe, distances], axis=1)
+
+    return df_combined
+
+
 def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: torch.utils.data.DataLoader,
                           pnorm: int = 1, save: bool = False) -> pd.DataFrame:
     """Calculates the Lp distance distance between the embedding vector for the
@@ -233,7 +255,7 @@ def calculate_distance_ml(backbone: MultiLabelNet, reference_id: int, loader: to
     rec_distances = list()
 
     # number of images in the dataloader
-    ntest = 5000  # len(loader.dataset)
+    ntest = 100  # len(loader.dataset)
 
     # create an empty list to record the distances
     rec_distances = list()
