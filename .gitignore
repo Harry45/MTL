@@ -11,6 +11,7 @@ fewshot/images-original/
 fewshot/train/
 fewshot/validate/
 results/embedding_vectors_ml.pkl
+juno/
 
 # C extensions
 *.so
