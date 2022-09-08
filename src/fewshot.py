@@ -317,8 +317,8 @@ def ml_feature_extractor(model: torch.nn.modules, dataloaders: dict, save: bool,
     nshots = len(dataloaders[col].dataset)
 
     if save:
-        hp.save_pickle(vectors, "fewshot", f"{folder}/vectors_{str(nshots)}")
-        hp.save_pickle(vectors_mean, "fewshot", f"{folder}/vectors_mean_{str(nshots)}")
+        hp.save_pickle(vectors, st.FS_FOLDER, f"{folder}/vectors_{str(nshots)}")
+        hp.save_pickle(vectors_mean, st.FS_FOLDER, f"{folder}/vectors_mean_{str(nshots)}")
 
     return vectors, vectors_mean
 
@@ -345,7 +345,7 @@ def distance_support_query(modelname: str, nshot: int, save: bool, train: bool =
         folder = 'validate'
 
     # mean vector computed and stored
-    vectors_mean = hp.load_pickle('fewshot', f'{folder}/vectors_mean_{str(nshot)}')
+    vectors_mean = hp.load_pickle(st.FS_FOLDER, f'{folder}/vectors_mean_{str(nshot)}')
 
     # the model loaded
     model = ml_backbone(modelname)
@@ -362,7 +362,7 @@ def distance_support_query(modelname: str, nshot: int, save: bool, train: bool =
         v_norm = F.normalize(vectors_mean[key].view(1, -1))
         class_support.append(v_norm)
 
-    # convert to a tensor (this is of size 4 x 1000)
+    # convert to a tensor (this is of size 4 x 1000 or 6 x 1000 if JUNO)
     class_support = torch.cat(class_support, dim=0)
 
     print(f'The shape of the supports embeddings is {class_support.shape[0]} x {class_support.shape[1]}')
@@ -396,14 +396,14 @@ def distance_support_query(modelname: str, nshot: int, save: bool, train: bool =
     labels_pred.columns = ['Objects', 'Labels']
 
     # load the true labels and merge them with the predicted labels
-    truth = hp.load_csv('fewshot', f'{folder}/query_{str(nshot)}')
+    truth = hp.load_csv(st.FS_FOLDER, f'{folder}/query_{str(nshot)}')
     combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
 
     # rename the columns for the combined dataframe
     combined.columns = ['Objects', 'True Labels', 'Predicted Labels']
 
     if save:
-        hp.save_pd_csv(combined, 'fewshot', f'{folder}/nearest_neighbour_{str(nshot)}')
+        hp.save_pd_csv(combined, st.FS_FOLDER, f'{folder}/nearest_neighbour_{str(nshot)}')
 
     return combined
 
@@ -427,8 +427,8 @@ def generate_labels_fewshot(nshot: int, save: bool, train: bool) -> Tuple[pd.Dat
         folder = 'validate'
 
     # load the csv files with the object names
-    labels_query = hp.load_csv('fewshot', f'{folder}/query_{str(nshot)}')
-    labels_support = hp.load_csv('fewshot', f'{folder}/support_{str(nshot)}')
+    labels_query = hp.load_csv(st.FS_FOLDER, f'{folder}/query_{str(nshot)}')
+    labels_support = hp.load_csv(st.FS_FOLDER, f'{folder}/support_{str(nshot)}')
 
     # generate a column consisting of the integer labels for the query and
     # support sets
@@ -436,8 +436,8 @@ def generate_labels_fewshot(nshot: int, save: bool, train: bool) -> Tuple[pd.Dat
     labels_support['Targets'] = pd.factorize(labels_support['Labels'])[0]
 
     if save:
-        hp.save_pd_csv(labels_query, 'fewshot', f'{folder}/query_targets_{str(nshot)}')
-        hp.save_pd_csv(labels_support, 'fewshot', f'{folder}/support_targets_{str(nshot)}')
+        hp.save_pd_csv(labels_query, st.FS_FOLDER, f'{folder}/query_targets_{str(nshot)}')
+        hp.save_pd_csv(labels_support, st.FS_FOLDER, f'{folder}/support_targets_{str(nshot)}')
 
     return labels_query, labels_support
 
@@ -687,13 +687,13 @@ def finetuning_predictions(model: nn.Module, queryloader: DataLoader, nshot: int
     labels_pred.columns = ['Objects', 'Labels']
 
     # load the true labels and merge them with the predicted labels
-    truth = hp.load_csv('fewshot', f'{folder}/query_{str(nshot)}')
+    truth = hp.load_csv(st.FS_FOLDER, f'{folder}/query_{str(nshot)}')
     combined = pd.merge(truth, labels_pred, on='Objects', how='outer')
 
     # rename the columns for the combined dataframe
     combined.columns = ['Objects', 'True Labels', 'Predicted Labels']
 
     if save:
-        hp.save_pd_csv(combined, 'fewshot', f'finetune_{folder}_{str(nshot)}_{str(nepochs)}')
+        hp.save_pd_csv(combined, st.FS_FOLDER, f'finetune_{folder}_{str(nshot)}_{str(nepochs)}')
 
     return combined

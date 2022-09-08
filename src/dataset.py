@@ -58,7 +58,7 @@ class FewShotFineTuneData(Dataset):
         else:
             fname = f'{self.folder}/query_targets_{str(nshot)}'
 
-        self.csvfile = hp.load_csv('fewshot', fname)
+        self.csvfile = hp.load_csv(st.FS_FOLDER, fname)
 
         # to remove later
         # if not support:
@@ -73,10 +73,10 @@ class FewShotFineTuneData(Dataset):
         target = row['Targets']
 
         if self.support:
-            filepath = f"fewshot/{self.folder}/{str(self.nshot)}-shots/{row['Labels']}/{row['Objects']}"
+            filepath = f"{st.FS_FOLDER}/{self.folder}/{str(self.nshot)}-shots/{row['Labels']}/{row['Objects']}"
 
         else:
-            filepath = f"fewshot/{self.folder}/query/{row['Objects']}"
+            filepath = f"{st.FS_FOLDER}/{self.folder}/query/{row['Objects']}"
 
         # load the image
         image = Image.open(filepath).convert("RGB")
@@ -126,12 +126,12 @@ class FSdataset(Dataset):
             nshot = kwargs.pop('nshot')
 
             # get all the file names for that particular object
-            self.fnames = glob.glob(f'fewshot/{self.folder}/{str(nshot)}-shots/' + self.objtype + '/*')
+            self.fnames = glob.glob(f'{st.FS_FOLDER}/{self.folder}/{str(nshot)}-shots/' + self.objtype + '/*')
 
         else:
 
             # the files are the query images
-            self.fnames = glob.glob(f'fewshot/{self.folder}/query/*')
+            self.fnames = glob.glob(f'{st.FS_FOLDER}/{self.folder}/query/*')
 
     def __getitem__(self, index) -> torch.Tensor:
 

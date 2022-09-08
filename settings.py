@@ -203,18 +203,42 @@ MAPPING = {'smooth-or-featured_smooth_fraction': 'Smooth',
 # ------------------------------------------------------------------------------------------------
 # Few Shot Learning
 # ------------------------------------------------------------------------------------------------
+# Galaxy Zoo
+# ----------
 
-# the columns to work with in the few shot learning dataset
+# FS_FOLDER = 'fewshot'
+
+# # the columns to work with in the few shot learning dataset
 FS_COLS = ['Artifact', 'Cigar Shaped', 'Merging (Merger)', 'Spiral Arms (Yes)']
 
+# # the renamed classes (just for the folders' names)
+# FS_CLASSES = ['Artifact', 'Cigar-Shaped', 'Merging-Merger', 'Spiral-Arms-Yes']
+
+# # number of ways (classes)
+# NWAYS = len(FS_CLASSES)
+
+# # number of examples per class in the few shot learning dataset
+# NSHOTS = 10
+
+# JUNO
+# ----
+
+FS_FOLDER = 'juno'
+
 # the renamed classes (just for the folders' names)
-FS_CLASSES = ['Artifact', 'Cigar-Shaped', 'Merging-Merger', 'Spiral-Arms-Yes']
+FS_CLASSES = ['Artifact', 'Ring', 'Cigar', 'Merger', 'Elliptical', 'Spiral']
+
+# mapping in case we need this
+FS_MAP = {i: FS_CLASSES[i] for i in range(len(FS_CLASSES))}
 
 # number of ways (classes)
 NWAYS = len(FS_CLASSES)
 
 # number of examples per class in the few shot learning dataset
 NSHOTS = 10
+
+# path for the query images
+PATH_QUERY = 'juno/train/query/'
 
 # ------------------------------------------------------------------------------------------------
 # Clustering
